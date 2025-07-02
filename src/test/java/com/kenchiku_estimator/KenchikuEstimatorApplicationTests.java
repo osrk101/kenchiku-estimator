@@ -1,4 +1,4 @@
-package com.example.kenchiku_estimator;
+package com.kenchiku_estimator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

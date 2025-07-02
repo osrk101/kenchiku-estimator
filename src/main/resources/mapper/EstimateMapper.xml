@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Mapperとxmlのマッピング -->
+<mapper namespace="com.kenchiku_estimator.repository.EstimateMapper">
+
+<!-- 見積書のマッピング -->
+    <select id="findAll" resultType="com.kenchiku_estimator.model.MEstimate">
+        SELECT * FROM estimates
+    </select>
+
+    <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MEstimate">
+        SELECT * FROM estimates WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.kenchiku_estimator.model.MEstimate">
+        INSERT INTO estimates (estimate_number, title, created_by, created_at)
+        VALUES (#{estimateNumber}, #{title}, #{createdBy}, #{createdAt})
+    </insert>
+
+    <update id="update" parameterType="com.kenchiku_estimator.model.MEstimate">
+        UPDATE estimates
+        SET title = #{title}, created_by = #{createdBy}, created_at = #{createdAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM estimates WHERE id = #{id}
+    </delete>
+
+</mapper>
