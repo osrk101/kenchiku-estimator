@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/simpleLayout">
+
+
+<head>
+	<title th:text="#{error}"></title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div class="container text-center">
+			<h1 th:text="${status} + ' ' + ${error}"></h1>
+			<p th:text="${message}"></p>
+			<p>エラーが発生しました</p>
+			<form th:action="@{/logout}" method="post">
+				<button class="btn btn-warning btn-sm" th:text="#{logout}"></button>
+			</form>
+		</div>
+	</div>
+
+</body>
+
+</html>

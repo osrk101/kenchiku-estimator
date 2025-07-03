@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/simpleLayout">
+
+<head>
+<title th:text="#{user.login.title}"></title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div class="container text-center">
+			<!-- ログイン画面タイトル -->
+			<div class="row">
+				<div class="col text-center">
+					<h2 th:text="#{user.login.title}"></h2>
+					<p
+						th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}"
+						th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"
+						class="text-danger">ログインエラーメッセージ</p>
+				</div>
+			</div>
+
+			<!-- ログインフォーム -->
+			<div class="row mt-3">
+				<!-- 左側の余白 -->
+				<div class="col-sm-3"></div>
+				<!-- 中央のカラム -->
+				<div class="col-sm-6">
+					<form
+						th:action="@{/login}"
+						method="post"
+						class="form-input">
+						<!-- ユーザー名 -->
+						<div class="form-group">
+							<label
+								for="username"
+								th:text="#{username}"></label>
+							<input
+								type="text"
+								class="form-control"
+								name="username"
+								placeholder="ユーザー名を入力"
+								required>
+						</div>
+						<!-- パスワード -->
+						<div class="form-group">
+							<label
+								for="password"
+								th:text="#{password}"></label>
+							<input
+								type="password"
+								class="form-control"
+								name="password"
+								placeholder="パスワードを入力"
+								required>
+						</div>
+						<!-- ログインボタン -->
+						<button
+							type="submit"
+							class="btn btn-primary"
+							th:text="#{user.login.title}"></button>
+					</form>
+				</div>
+				<!-- 右側の余白 -->
+				<div class="col-sm-3"></div>
+			</div>
+			<!-- エラーメッセージの表示 -->
+			<div class="row mt-3">
+				<!-- 左側の余白 -->
+				<div class="col-sm-3"></div>
+				<!-- 中央のカラム -->
+				<div class="col-sm-6"></div>
+				<!-- 右側の余白 -->
+				<div class="col-sm-3"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
