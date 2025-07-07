@@ -2,19 +2,14 @@ package com.kenchiku_estimator.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.kenchiku_estimator.model.MEstimate;
-import com.kenchiku_estimator.repository.EstimateMapper;
 
-@Service
-public class EstimateService {
+public interface EstimateService {
 
-    @Autowired
-    private EstimateMapper estimateMapper;
+    // すべての見積書を取得
+    public List<MEstimate> getAllEstimates();
 
-    public List<MEstimate> getAllEstimates() {
-        return estimateMapper.findAll();
-    }
+    // 該当するIDの見積書を1件取得
+    public MEstimate getEstimateOne(int id);
+
 }

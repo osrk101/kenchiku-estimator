@@ -7,7 +7,10 @@ import com.kenchiku_estimator.model.MAccount;
 public interface AccountMapper {
 
     // 全件取得
-    List<MAccount> findAll() ;
+    List<MAccount> findAll();
+
+    // 氏名を全権取得
+    List<MAccount> findFullName();
 
     // IDで取得
     MAccount findById(int id);

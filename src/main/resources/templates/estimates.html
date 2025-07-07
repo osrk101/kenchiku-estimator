@@ -19,19 +19,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="estimate : ${estimateList}">
-                <td th:text="${estimate.id}"></td>
-                <td th:text="${estimate.estimateNumber}"></td>
-                <td th:text="${estimate.title}"></td>
-                <td th:text="${estimate.createdBy}"></td>
-                <td th:text="${estimate.createdAt}"></td>
+            <tr th:each="MEstimate : ${estimatesList}">
+                <td th:text="${MEstimate.id}"></td>
+                <td th:text="${MEstimate.estimateNumber}"></td>
+                <td th:text="${MEstimate.title}"></td>
+                <td th:text="${MEstimate.createdBy}"></td>
+                <td th:text="${MEstimate.createdAt}"></td>
                 <td>
                     <div class="d-flex">
-                        <form th:action="@{/estimates/{id}}" method="get">
+                        <form th:action="@{/estimates/detail}" method="get">
                             <input type="hidden" name="id" th:value="${MEstimate.id}">
                             <input type="submit" value="詳細" class="btn btn-success btn-sm" />
                         </form>
-                        <form th:action="@{/updateTodo}" method="get">
+                        <form th:action="@{/estimates/edit}" method="get">
                             <input type="hidden" name="id" th:value="${MEstimate.id}">
                             <input type="submit" value="編集" class="btn btn-warning btn-sm" />
                         </form>

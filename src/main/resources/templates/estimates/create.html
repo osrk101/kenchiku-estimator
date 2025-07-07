@@ -7,12 +7,48 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
 
-<body class="container mt-5">
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-sm-12">
 
-    <h1>見積書の新規作成</h1>
+                    <form th:action="@{/addTodo}" method="post" th:object="${estimateForm}">
+                        <!-- 項目名 -->
+                        <div class="form-group">
+                            <label for="itemName" th:text="#{estimate.itemName}"></label>
+                            <input type="text" class="form-control" th:field="*{itemName}" th:errorClass="is-invalid" />
+                            <div class="invalid-feedback" th:errors="*{itemName}"></div>
+                        </div>
 
+                        <!-- 担当者 -->
+                        <div class="form-group">
+                            <label for="AccountId" th:text="#{estimate.fullname}"></label>
+                            <select class="form-control" th:field="*{AccountId}" th:errorClass="is-invalid">
+                                <option value="">担当者を選択</option>
+                                <option th:each="Account : ${AccountsList}" th:value="${Account.Id}"
+                                    th:text="${Account.fullname}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{AccountId}"></div>
+                        </div>
 
+                        <!-- 完了 -->
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="finished" th:field="*{finished}">
+                            <label for="finished" th:text="#{finished}"></label>
+                        </div>
 
+                        <!-- ボタン -->
+                        <button type="submit" class="btn btn-primary" th:text="#{estimateList.add}"></button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            onclick="location.href='/viewTodoList';">キャンセル</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
+</html>
 
 </html>
