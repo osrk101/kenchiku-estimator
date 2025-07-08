@@ -1,13 +1,20 @@
 package com.kenchiku_estimator.form;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
 public class EstimateItemForm {
 
-    private String title;
+    private int estimateId;
     
-    private List<EstimateItemForm> items = new ArrayList<>();
+    private String estimateItemName;
+
+    private BigDecimal unit_price;
+
+    private BigDecimal quantity;
+
+    private String unit;
+
 }

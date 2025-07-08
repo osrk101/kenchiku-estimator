@@ -1,62 +1,40 @@
 <!DOCTYPE html>
-<html
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <head>
 </head>
 
 <body>
 	<!-- ログインページ用ヘッダー -->
-	<nav
-		layout:fragment="header"
-		class="navbar navbar-expand-md navbar-dark bg-primary">
+	<nav layout:fragment="header" class="navbar navbar-expand-md navbar-dark bg-primary">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a
-					class="navbar-brand"
-					th:text="#{todo.page.title}"></a>
+				<a class="navbar-brand" th:text="#{estimate.page.title}"></a>
 			</div>
 		</div>
 	</nav>
 
 	<!-- ログイン後のページ用ヘッダー -->
-	<nav
-		layout:fragment="headerWithUser"
-		class="navbar navbar-expand-md navbar-dark bg-primary">
+	<nav layout:fragment="headerWithUser" class="navbar navbar-expand-md navbar-dark bg-primary">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a
-					class="navbar-brand"
-					th:text="#{todo.page.title}"></a>
+				<a class="navbar-brand" th:text="#{applicationTitle}"></a>
 			</div>
 
 			<ul class="navbar-nav mr-auto">
-				<li
-					class="nav-item"
+				<li class="nav-item"
 					th:classappend="${currentPath != null and currentPath.startsWith('/viewTodoList')} ? 'active'"><a
-					class="nav-link"
-					th:href="@{/viewTodoList}"
-					th:text="#{todoList.view}"></a></li>
-				<li
-					class="nav-item"
+						class="nav-link" th:href="@{/viewTodoList}" th:text="#{todoList.view}"></a></li>
+				<li class="nav-item"
 					th:classappend="${currentPath != null and currentPath.startsWith('/addTodo')} ? 'active'"><a
-					class="nav-link"
-					th:href="@{/addTodo}"
-					th:text="#{todoList.add}"></a></li>
+						class="nav-link" th:href="@{/addTodo}" th:text="#{todoList.add}"></a></li>
 			</ul>
 
-			<span
-				class="navbar-text mr-5"
-				th:if="${#authentication != null}"
+			<span class="navbar-text mr-5" th:if="${#authentication != null}"
 				th:text="|ようこそ、${#authentication.principal.familyName} ${#authentication.principal.firstName}さん|"></span>
 
-			<form
-				method="post"
-				th:action="@{/logout}">
-				<button
-					class="btn btn-outline-light"
-					type="submit" th:text="#{logout}"></button>
+			<form method="post" th:action="@{/logout}">
+				<button class="btn btn-outline-light" type="submit" th:text="#{logout}"></button>
 			</form>
 
 		</div>

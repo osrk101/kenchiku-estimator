@@ -12,6 +12,27 @@
     <p>件名: <span th:text="${estimate.title}"></span></p>
     <p>作成者: <span th:text="${estimate.createdBy}"></span></p>
     <p>作成日: <span th:text="${estimate.createdAt}"></span></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>単価</th>
+                <th>数量</th>
+                <th>単位</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${estimateItems}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.itemName}"></td>
+                <td th:text="${item.unitPrice}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${item.unit}"></td>
+            </tr>
+        </tbody>
+    </table>
     <a th:href="@{/estimates}">一覧に戻る</a>
 </body>
 

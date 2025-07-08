@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-sm-12">
 
-                    <form th:action="@{/addTodo}" method="post" th:object="${estimateForm}">
+                    <form th:action="@{/create}" method="post" th:object="${estimateForm}">
                         <!-- 項目名 -->
                         <div class="form-group">
                             <label for="itemName" th:text="#{estimate.itemName}"></label>
@@ -23,25 +23,19 @@
 
                         <!-- 担当者 -->
                         <div class="form-group">
-                            <label for="AccountId" th:text="#{estimate.fullname}"></label>
-                            <select class="form-control" th:field="*{AccountId}" th:errorClass="is-invalid">
+                            <label for="accountId" th:text="#{estimate.fullname}"></label>
+                            <select class="form-control" th:field="*{accountId}" th:errorClass="is-invalid">
                                 <option value="">担当者を選択</option>
-                                <option th:each="Account : ${AccountsList}" th:value="${Account.Id}"
-                                    th:text="${Account.fullname}"></option>
+                                <option th:each="account : ${accountsList}" th:value="${account.Id}"
+                                    th:text="${account.fullname}"></option>
                             </select>
-                            <div class="invalid-feedback" th:errors="*{AccountId}"></div>
-                        </div>
-
-                        <!-- 完了 -->
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="finished" th:field="*{finished}">
-                            <label for="finished" th:text="#{finished}"></label>
+                            <div class="invalid-feedback" th:errors="*{accountId}"></div>
                         </div>
 
                         <!-- ボタン -->
-                        <button type="submit" class="btn btn-primary" th:text="#{estimateList.add}"></button>
+                        <button type="submit" class="btn btn-primary" th:text="#{estimateList.create}"></button>
                         <button type="button" class="btn btn-outline-secondary"
-                            onclick="location.href='/viewTodoList';">キャンセル</button>
+                            onclick="location.href='/estimates';">キャンセル</button>
                     </form>
                 </div>
             </div>
