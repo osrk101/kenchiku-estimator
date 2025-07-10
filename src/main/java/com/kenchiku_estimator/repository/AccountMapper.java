@@ -9,8 +9,8 @@ public interface AccountMapper {
     // 全件取得
     List<MAccount> findAll();
 
-    // 氏名を全権取得
-    List<MAccount> findFullName();
+    // 氏名を全件取得
+    List<MAccount> findAllFullName();
 
     // IDで取得
     MAccount findById(int id);

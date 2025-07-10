@@ -8,8 +8,8 @@ import lombok.Data;
 public class EstimateItemForm {
 
     private int estimateId;
-    
-    private String estimateItemName;
+
+    private String estimateitemname;
 
     private BigDecimal unit_price;
 

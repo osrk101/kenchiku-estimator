@@ -6,13 +6,29 @@
 <!-- Mapperとxmlのマッピング -->
 <mapper namespace="com.kenchiku_estimator.repository.EstimateMapper">
 
-<!-- 見積書のマッピング -->
+    <!-- 見積書のマッピング -->
+
     <select id="findAll" resultType="com.kenchiku_estimator.model.MEstimate">
-        SELECT * FROM estimates
+        SELECT  e.id,
+                e.estimate_number,
+                e.title,
+                e.created_by,
+                e.created_at,
+                a.full_name AS fullname
+        FROM estimates e
+        LEFT JOIN accounts a ON e.created_by = a.id
     </select>
 
     <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MEstimate">
-        SELECT * FROM estimates WHERE id = #{id}
+        SELECT  e.id,
+                e.estimate_number,
+                e.title,
+                e.created_by,
+                e.created_at,
+                a.full_name AS fullname
+        FROM estimates e 
+        LEFT JOIN accounts a ON e.created_by = a.id
+        WHERE e.id = #{id}
     </select>
 
     <insert id="insert" parameterType="com.kenchiku_estimator.model.MEstimate">

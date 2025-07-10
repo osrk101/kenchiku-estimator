@@ -16,4 +16,6 @@ public class MEstimate {
     private int createdBy;
 
     private LocalDate createdAt;
+
+    private String fullname;
 }

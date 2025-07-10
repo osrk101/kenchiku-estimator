@@ -13,5 +13,5 @@ public class MAccount {
 
     private String role;
 
-    private String fullName;
+    private String fullname;
 }

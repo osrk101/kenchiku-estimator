@@ -1,55 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="layout/commonLayout">
 
 <head>
-    <meta charset="UTF-8">
     <title>見積書一覧</title>
 </head>
 
 <body>
-    <h1>見積書一覧</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>見積番号</th>
-                <th>件名</th>
-                <th>作成者</th>
-                <th>作成日</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="MEstimate : ${estimatesList}">
-                <td th:text="${MEstimate.id}"></td>
-                <td th:text="${MEstimate.estimateNumber}"></td>
-                <td th:text="${MEstimate.title}"></td>
-                <td th:text="${MEstimate.createdBy}"></td>
-                <td th:text="${MEstimate.createdAt}"></td>
-                <td>
-                    <div class="d-flex">
-                        <form th:action="@{/estimates/detail}" method="get">
-                            <input type="hidden" name="id" th:value="${MEstimate.id}">
-                            <input type="submit" value="詳細" class="btn btn-success btn-sm" />
-                        </form>
-                        <form th:action="@{/estimates/edit}" method="get">
-                            <input type="hidden" name="id" th:value="${MEstimate.id}">
-                            <input type="submit" value="編集" class="btn btn-warning btn-sm" />
-                        </form>
-                        <form th:action="@{/confirmDelete}" method="get">
-                            <input type="hidden" name="id" th:value="${MEstimate.id}">
-                            <input type="submit" value="削除" class="btn btn-danger btn-sm" />
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div layout:fragment="content">
+        <h1 class="mb-4">見積書一覧</h1>
 
-    <form th:action="@{/estimates/create}" method="get">
-        <input type="submit" value="新規作成" class="btn btn-warning btn-sm" />
-    </form>
+        <!-- 検索フォーム -->
+        <form class="mb-3 row g-2" th:action="@{/estimates}" method="get">
+            <div class="col-auto">
+                <input type="text" class="form-control" name="estimateNumber" placeholder="見積番号">
+            </div>
+            <div class="col-auto">
+                <input type="text" class="form-control" name="title" placeholder="件名">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">検索</button>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-success" th:href="@{/estimates/create}">新規作成</a>
+            </div>
+        </form>
 
-
+        <!-- 見積書一覧テーブル -->
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>見積番号</th>
+                    <th>件名</th>
+                    <th>作成者</th>
+                    <th>作成日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- estimateList: List<MEstimate> + createdByName（コントローラーでセット推奨） -->
+                <tr th:each="estimate : ${estimatesList}">
+                    <td th:text="${estimate.estimateNumber}"></td>
+                    <td th:text="${estimate.title}"></td>
+                    <td th:text="${estimate.fullname}"></td>
+                    <td th:text="${estimate.createdAt}"></td>
+                    <td>
+                        <a th:href="@{|/estimates/detail/${estimate.id}|}" class="btn btn-outline-primary btn-sm">詳細</a>
+                        <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-outline-secondary btn-sm">編集</a>
+                        <a th:href="@{|/estimates/delete/${estimate.id}|}" class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('本当に削除しますか？')">削除</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(estimatesList)}">
+                    <td colspan="5" class="text-center">見積書がありません</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

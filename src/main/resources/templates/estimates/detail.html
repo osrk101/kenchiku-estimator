@@ -1,39 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="layout/commonLayout">
 
 <head>
     <title>見積書詳細</title>
 </head>
 
 <body>
-    <h1>見積書詳細</h1>
-    <p>ID: <span th:text="${estimate.id}"></span></p>
-    <p>見積番号: <span th:text="${estimate.estimateNumber}"></span></p>
-    <p>件名: <span th:text="${estimate.title}"></span></p>
-    <p>作成者: <span th:text="${estimate.createdBy}"></span></p>
-    <p>作成日: <span th:text="${estimate.createdAt}"></span></p>
+    <div layout:fragment="content">
+        <h1 class="mb-4">見積書詳細</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${estimate.title}">件名</h5>
+                <div class="row mb-2">
+                    <label class="col-sm-2 col-form-label">見積番号</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext" th:text="${estimate.estimateNumber}"></p>
+                    </div>
+                    <label class="col-sm-2 col-form-label">作成者</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext" th:text="${estimate.fullname}"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <label class="col-sm-2 col-form-label">作成日</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext"
+                            th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>名前</th>
-                <th>単価</th>
-                <th>数量</th>
-                <th>単位</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="item : ${estimateItems}">
-                <td th:text="${item.id}"></td>
-                <td th:text="${item.itemName}"></td>
-                <td th:text="${item.unitPrice}"></td>
-                <td th:text="${item.quantity}"></td>
-                <td th:text="${item.unit}"></td>
-            </tr>
-        </tbody>
-    </table>
-    <a th:href="@{/estimates}">一覧に戻る</a>
+        <h4>見積内訳</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>項目名</th>
+                    <th>単価</th>
+                    <th>数量</th>
+                    <th>単位</th>
+                    <th>金額</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${estimateItems}">
+                    <td th:text="${item.itemname}"></td>
+                    <td th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td th:text="${item.unit}"></td>
+                    <td th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(estimateItems)}">
+                    <td colspan="5" class="text-center">内訳がありません</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/estimates}" class="btn btn-secondary">一覧に戻る</a>
+        <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-primary">編集</a>
+    </div>
 </body>
 
 </html>

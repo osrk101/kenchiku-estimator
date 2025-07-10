@@ -9,8 +9,7 @@
         SELECT * FROM accounts </select>
 
     <select id="findAllFullName" resultType="com.kenchiku_estimator.model.MAccount"> 
-        SELECT fullname
-        FROM accounts </select>
+        SELECT full_name FROM accounts </select>
 
     <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MAccount">
         SELECT * FROM accounts WHERE id = #{id} </select>

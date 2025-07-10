@@ -9,7 +9,13 @@ import lombok.Data;
 public class EstimateForm {
 
     private String title;
-    
+
+    private String itemname;
+
     private List<EstimateItemForm> items = new ArrayList<>();
+
+    private String accountId;
+
+    private List<String> accountFullNameList = new ArrayList<>();
 
 }
