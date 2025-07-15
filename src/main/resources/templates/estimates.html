@@ -32,16 +32,17 @@
                 <tr>
                     <th>見積番号</th>
                     <th>件名</th>
-                    <th>作成者</th>
+                    <th>顧客名</th>
+                    <th>担当者</th>
                     <th>作成日</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- estimateList: List<MEstimate> + createdByName（コントローラーでセット推奨） -->
                 <tr th:each="estimate : ${estimatesList}">
                     <td th:text="${estimate.estimateNumber}"></td>
                     <td th:text="${estimate.title}"></td>
+                    <td th:text="${estimate.clientName}"></td>
                     <td th:text="${estimate.fullname}"></td>
                     <td th:text="${estimate.createdAt}"></td>
                     <td>

@@ -12,8 +12,8 @@ public interface AccountMapper {
     // 氏名を全件取得
     List<MAccount> findAllFullName();
 
-    // IDで取得
-    MAccount findById(int id);
+    // usernameでアカウントを取得
+    MAccount findByUsername(String username);
 
     // 登録
     void insert(MAccount account);

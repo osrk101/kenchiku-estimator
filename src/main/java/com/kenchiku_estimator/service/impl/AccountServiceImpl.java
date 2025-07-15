@@ -24,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.findAll();
     }
 
+    // 全アカウントの氏名を取得
     @Override
     public List<MAccount> getAllAccountsFullName() {
         log.info("Service 全アカウントの氏名を取得します");

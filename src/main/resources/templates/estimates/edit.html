@@ -5,15 +5,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>見積書新規作成</title>
+    <title>見積書編集</title>
 </head>
 
 <body>
     <div layout:fragment="content">
-        <h1 class="mb-4">見積書 新規作成</h1>
-        <form class="mb-3 row g-2" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
+        <h1 class="mb-4">見積書 編集</h1>
+        <form class="mb-3 row g-2" th:action="@{/estimates/edit}" method="post" th:object="${estimateForm}">
             <div class="col-auto">
-                <label for="title" class="form-label">件名</label>
+                <label for="title" th:text="#{estimate.title}" class="form-label"></label>
                 <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100" required>
                 <div class="form-text">※100文字以内</div>
             </div>

@@ -13,6 +13,8 @@ public class MEstimate {
 
     private String title;
 
+    private String clientName;
+
     private int createdBy;
 
     private LocalDate createdAt;

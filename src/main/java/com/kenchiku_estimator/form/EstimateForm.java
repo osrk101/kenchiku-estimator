@@ -10,7 +10,7 @@ public class EstimateForm {
 
     private String title;
 
-    private String itemname;
+    private String clientName;
 
     private List<EstimateItemForm> items = new ArrayList<>();
 
