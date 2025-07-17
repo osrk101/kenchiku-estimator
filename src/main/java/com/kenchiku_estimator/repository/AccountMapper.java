@@ -10,7 +10,7 @@ public interface AccountMapper {
     List<MAccount> findAll();
 
     // 氏名を全件取得
-    List<MAccount> findAllFullName();
+    List<MAccount> findAllFullname();
 
     // usernameでアカウントを取得
     MAccount findByUsername(String username);

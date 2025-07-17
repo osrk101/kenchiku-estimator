@@ -11,7 +11,7 @@ public class MEstimateItem {
 
     private int estimateId;
 
-    private String itemname;
+    private String itemName;
 
     private BigDecimal unitPrice;
 

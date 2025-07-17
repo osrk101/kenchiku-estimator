@@ -13,15 +13,13 @@
         <!-- 検索フォーム -->
         <form class="mb-3 row g-2" th:action="@{/estimates}" method="get">
             <div class="col-auto">
-                <input type="text" class="form-control" name="estimateNumber" placeholder="見積番号">
-            </div>
-            <div class="col-auto">
-                <input type="text" class="form-control" name="title" placeholder="件名">
+                <input type="text" class="form-control" name="title">>
+
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">検索</button>
             </div>
-            <div class="col-auto">
+            <div class="col-2 left">
                 <a class="btn btn-success" th:href="@{/estimates/create}">新規作成</a>
             </div>
         </form>

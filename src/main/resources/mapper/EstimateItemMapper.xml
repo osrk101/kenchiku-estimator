@@ -11,13 +11,13 @@
     <!-- 見積書アイテムを新規作成 -->
     <select id = "createEstimateItem" parameterType="com.kenchiku_estimator.form.EstimateItemForm" resultType="com.kenchiku_estimator.model.MEstimateItem">
         INSERT INTO estimate_items (estimate_id, estimate_item_name, unit_price, quantity, unit)
-        VALUES (#{estimateId}, #{estimateitemname}, #{unitPrice}, #{quantity}, #{unit})
+        VALUES (#{estimateId}, #{estimateitemName}, #{unitPrice}, #{quantity}, #{unit})
     </select>
 
     <!-- 該当の見積書アイテムを取得する -->
     <select id="findByEstimateId" resultType="com.kenchiku_estimator.model.MEstimateItem">
         SELECT * FROM estimate_items 
-        WHERE estimate_id = #{estimateId}
+        WHERE estimate_id = #{id}
     </select>
 
 </mapper>

@@ -9,5 +9,5 @@ public interface AccountService {
     public List<MAccount> getAllAccounts();
 
     // 全アカウントの氏名を取得
-    public List<MAccount> getAllAccountsFullName();
+    public List<MAccount> getAllAccountsFullname();
 }

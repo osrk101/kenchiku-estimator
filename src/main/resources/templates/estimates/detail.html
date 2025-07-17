@@ -45,7 +45,7 @@
             </thead>
             <tbody>
                 <tr th:each="item : ${estimateItems}">
-                    <td th:text="${item.itemname}"></td>
+                    <td th:text="${item.itemName}"></td>
                     <td th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
                     <td th:text="${item.quantity}"></td>
                     <td th:text="${item.unit}"></td>

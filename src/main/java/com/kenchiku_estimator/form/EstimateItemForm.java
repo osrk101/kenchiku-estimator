@@ -2,6 +2,7 @@ package com.kenchiku_estimator.form;
 
 import java.math.BigDecimal;
 
+import jakarta.validation.constraints.Digits;
 import lombok.Data;
 
 @Data
@@ -9,9 +10,9 @@ public class EstimateItemForm {
 
     private int estimateId;
 
-    private String estimateitemname;
+    private String itemName;
 
-    private BigDecimal unit_price;
+    private BigDecimal unitPrice;
 
     private BigDecimal quantity;
 

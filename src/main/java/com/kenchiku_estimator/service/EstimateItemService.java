@@ -1,7 +1,6 @@
 package com.kenchiku_estimator.service;
 
 import java.util.List;
-
 import com.kenchiku_estimator.model.MEstimateItem;
 
 public interface EstimateItemService {

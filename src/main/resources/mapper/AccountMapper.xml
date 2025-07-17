@@ -8,8 +8,13 @@
     <select id="findAll" resultType="com.kenchiku_estimator.model.MAccount"> 
         SELECT * FROM accounts </select>
     <!-- アカウント氏名全取得-->
-    <select id="findAllFullName" resultType="com.kenchiku_estimator.model.MAccount"> 
-        SELECT full_name FROM accounts </select>
+    <select id="findAllFullname" resultType="com.kenchiku_estimator.model.MAccount"> 
+        SELECT id, full_name FROM accounts </select>
     <!-- IDでアカウントを取得-->
     <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MAccount">
         SELECT * FROM accounts WHERE id = #{id} </select>
+    <!-- ユーザ名でアカウントを取得 -->
+    <select id="findByUsername" parameterType="string" resultType="com.kenchiku_estimator.model.MAccount">
+    SELECT * FROM accounts WHERE username = #{username}
+    </select>
+</mapper>

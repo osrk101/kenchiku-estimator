@@ -13,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -35,11 +33,6 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	AuthenticationFailureHandler authenticationFailureHandler() {
-		return new SimpleUrlAuthenticationFailureHandler("/error");
-	}
-
-	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 		// ログイン不要ページの設定
@@ -50,12 +43,12 @@ public class SecurityConfig {
 
 		// ログイン処理
 		http.formLogin(login -> login
-				.loginProcessingUrl("/index")
+				.loginProcessingUrl("/login")
 				.loginPage("/index")
 				.usernameParameter("username")
 				.passwordParameter("password")
 				.defaultSuccessUrl("/estimates", true)
-				.failureHandler(authenticationFailureHandler())
+				.failureUrl("/index?error")
 				.permitAll())
 
 				// ログアウト処理

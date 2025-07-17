@@ -12,10 +12,8 @@ public class EstimateForm {
 
     private String clientName;
 
+    private int createdBy;
+
     private List<EstimateItemForm> items = new ArrayList<>();
-
-    private String accountId;
-
-    private List<String> accountFullNameList = new ArrayList<>();
 
 }
