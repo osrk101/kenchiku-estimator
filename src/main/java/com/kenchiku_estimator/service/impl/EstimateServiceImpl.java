@@ -31,4 +31,12 @@ public class EstimateServiceImpl implements EstimateService {
         return estimateMapper.findById(EstimateId);
     }
 
+    // 新規見積書の登録
+    @Override
+    public void createNewEstimate(MEstimate estimate) {
+        log.info("Service 新規見積書の登録クエリを実行します: {}", estimate);
+        estimateMapper.insert(estimate);
+        log.info("Service 新規見積書の登録クエリを実行しました: {}", estimate);
+    }
+
 }

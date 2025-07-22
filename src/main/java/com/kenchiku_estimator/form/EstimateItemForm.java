@@ -2,7 +2,6 @@ package com.kenchiku_estimator.form;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.constraints.Digits;
 import lombok.Data;
 
 @Data

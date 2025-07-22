@@ -12,4 +12,6 @@ public interface EstimateService {
     // 該当するIDの見積書を1件取得
     public MEstimate getEstimateOne(int id);
 
+    public void createNewEstimate(MEstimate estimate);
+
 }

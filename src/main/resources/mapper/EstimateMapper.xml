@@ -34,8 +34,10 @@
     </select>
 
     <insert id="insert" parameterType="com.kenchiku_estimator.model.MEstimate">
-        INSERT INTO estimates (estimate_number, title, client_name,created_by, created_at)
-        VALUES (#{estimateNumber}, #{title}, #{createdBy}, #{createdAt})
+        INSERT INTO estimates 
+        (estimate_number, title, client_name,created_by, created_at)
+        VALUES 
+        (#{estimateNumber}, #{title}, #{clientName}, #{createdBy}, CURRENT_DATE)
     </insert>
 
     <update id="update" parameterType="com.kenchiku_estimator.model.MEstimate">

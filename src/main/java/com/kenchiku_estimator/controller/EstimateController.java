@@ -1,15 +1,19 @@
 package com.kenchiku_estimator.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.validation.BindingResult;
 
 import com.kenchiku_estimator.form.EstimateForm;
 import com.kenchiku_estimator.form.EstimateItemForm;
@@ -73,7 +77,7 @@ public class EstimateController {
 
     // 見積書の詳細ページを表示する
     @GetMapping("/detail/{id}")
-    public String viewEstimate(@PathVariable int id, Model model) throws Exception {
+    public String viewEstimateDetail(@PathVariable int id, Model model) throws Exception {
         log.info("controller 見積書詳細画面を表示");
         findEstimateAndItems(id, model);
         return "estimates/detail";
@@ -81,7 +85,7 @@ public class EstimateController {
 
     // 既存見積書の編集ページを表示する
     @GetMapping("/edit/{id}")
-    public String EditEstimate(@PathVariable int id, EstimateForm estimateForm, BindingResult bindingResult,
+    public String ViewEditEstimateForm(@PathVariable int id, EstimateForm estimateForm, BindingResult bindingResult,
             Model model) throws Exception {
         log.info("controller 見積書編集画面を表示");
         MEstimate estimate = findEstimateAndItems(id, model);
@@ -106,12 +110,45 @@ public class EstimateController {
 
     // 新規見積書作成画面を表示する
     @GetMapping("/create")
-    public String createEstimate(EstimateForm esimateForm, MAccount mAccount, Model model) {
+    public String viewCreateEstimateForm(EstimateForm esimateForm, MAccount mAccount, Model model) {
         log.info("controller 見積書作成画面を表示");
         List<MAccount> fullnameList = accountService.getAllAccountsFullname();
         model.addAttribute("fullnameList", fullnameList);
+        EstimateForm estimateForm = new EstimateForm();
+        estimateForm.getItems().add(new EstimateItemForm());
         model.addAttribute("estimateForm", esimateForm);
         return "estimates/create";
+    }
+
+    // 新規見積書の登録
+    @PostMapping("/create")
+    public String createNewEstimate(@Validated EstimateForm esimateForm, BindingResult bindingResult, MAccount mAccount,
+            Model model) {
+        log.info("controller 新規見積書の登録作業を開始します");
+        if (bindingResult.hasErrors()) {
+            log.error("見積書の入力内容にエラーがあります: {}", bindingResult.getAllErrors());
+            List<MAccount> fullnameList = accountService.getAllAccountsFullname();
+            model.addAttribute("fullnameList", fullnameList);
+            return "estimates/create";
+        }
+        try {
+            // 例: 250722-01 の形式で生成
+            MEstimate estimate = modelMapper.map(esimateForm, MEstimate.class);
+            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            estimate.setEstimateNumber(today + "01"); // 本来は連番もDBなどから取得して付加
+            estimateService.createNewEstimate(estimate);
+            for (EstimateItemForm itemForm : esimateForm.getItems()) {
+                MEstimateItem item = modelMapper.map(itemForm, MEstimateItem.class);
+                item.setEstimateId(estimate.getId());
+                log.info("新規見積書アイテムを登録を開始します: {}", itemForm);
+                estimateItemService.createEstimateItem(item);
+            }
+        } catch (Exception e) {
+            log.error("新規見積書の登録に失敗しました: {}", e.getMessage());
+            bindingResult.reject("error.create", "新規見積書の登録に失敗しました。");
+            return "estimates/create";
+        }
+        return "redirect:/estimates";
     }
 
 }
