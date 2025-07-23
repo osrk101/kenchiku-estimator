@@ -1,5 +1,7 @@
 package com.kenchiku_estimator.service.impl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,23 @@ public class EstimateServiceImpl implements EstimateService {
     @Override
     public void createNewEstimate(MEstimate estimate) {
         log.info("Service 新規見積書の登録クエリを実行します: {}", estimate);
-        estimateMapper.insert(estimate);
+        estimateMapper.createNewEstimate(estimate);
         log.info("Service 新規見積書の登録クエリを実行しました: {}", estimate);
+    }
+
+    // 見積書番号を生成
+    public String generateEstimateNumber() {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+        int count = estimateMapper.countByEstimateNumberPrefix(today);
+        int sequence = count + 1;
+        return today + "-" + String.format("%02d", sequence);
+    }
+
+    // 見積書の削除
+    public void deleteEstimate(int id) {
+        log.info("Service 見積書を削除します: ID = {}", id);
+        estimateMapper.deleteEstimate(id);
+        log.info("見積書の削除に成功しました: ID = {}", id);
     }
 
 }

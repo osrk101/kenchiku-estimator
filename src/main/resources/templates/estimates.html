@@ -10,6 +10,8 @@
     <div layout:fragment="content">
         <h1 class="mb-4">見積書一覧</h1>
 
+
+
         <!-- 検索フォーム -->
         <form class="mb-3 row g-2" th:action="@{/estimates}" method="get">
             <div class="col-auto">
@@ -23,6 +25,11 @@
                 <a class="btn btn-success" th:href="@{/estimates/create}">新規作成</a>
             </div>
         </form>
+
+        <!-- メッセージ表示 -->
+        <div class="mb-3">
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        </div>
 
         <!-- 見積書一覧テーブル -->
         <table class="table table-bordered table-hover">
@@ -46,8 +53,8 @@
                     <td>
                         <a th:href="@{|/estimates/detail/${estimate.id}|}" class="btn btn-outline-primary btn-sm">詳細</a>
                         <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-outline-secondary btn-sm">編集</a>
-                        <a th:href="@{|/estimates/delete/${estimate.id}|}" class="btn btn-outline-danger btn-sm"
-                            onclick="return confirm('本当に削除しますか？')">削除</a>
+                        <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}"
+                            class="btn btn-outline-danger btn-sm">削除</a>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(estimatesList)}">

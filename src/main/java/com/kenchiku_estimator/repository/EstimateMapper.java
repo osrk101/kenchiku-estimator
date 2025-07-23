@@ -16,11 +16,14 @@ public interface EstimateMapper {
     MEstimate findById(int id);
 
     // 登録
-    void insert(MEstimate estimate);
+    void createNewEstimate(MEstimate estimate);
 
     // 更新
     void update(MEstimate estimate);
 
     // 削除
-    void delete(int id);
+    void deleteEstimate(int id);
+
+    // 見積番号の年月日で件数を取得
+    int countByEstimateNumberPrefix(String prefix);
 }

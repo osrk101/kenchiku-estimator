@@ -15,4 +15,6 @@ public interface EstimateItemMapper {
     // 該当の見積書アイテムを取得する
     public List<MEstimateItem> findByEstimateId(int id);
 
+    // 見積書アイテムの削除をする
+    void deleteEstimateItem(int id);
 }

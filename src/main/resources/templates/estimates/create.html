@@ -12,18 +12,18 @@
     <div layout:fragment="content">
         <h1 class="mb-4">見積書 新規作成</h1>
         <form class="mb-3 row g-2" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
-            <div class="col-auto">
+            <div class="col-4">
                 <label for="title" class="form-label">件名</label>
                 <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100" required>
                 <div class="form-text">※100文字以内</div>
             </div>
-            <div class="col-auto">
+            <div class="col-4">
                 <label for="clientName" class="form-label">顧客名</label>
                 <input type="text" th:field="*{clientName}" class="form-control" id="clientName" maxlength="100"
                     required>
                 <div class="form-text">※100文字以内</div>
             </div>
-            <div class="col-auto">
+            <div class="col-4">
                 <label for="createdBy" class="form-label">担当者</label>
                 <select class="form-select" id="createdBy" name="createdBy" required>
                     <option value=""></option>
@@ -35,32 +35,41 @@
 
             <!-- 内訳項目（繰り返し） -->
             <h4 class="mt-4">内訳</h4>
-            <div id="items">
-                <div th:each="item, stat : *{items}">
-                    <div class="row mb-2">
-                        <div class="col-md-3">
+            <table class="table table-bordered" id="items">
+                <thead class="table-light">
+                    <tr>
+                        <th>資材・作業名</th>
+                        <th>単価</th>
+                        <th>数量</th>
+                        <th>単位</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, stat : *{items}">
+                        <td>
                             <input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control"
                                 placeholder="資材・作業名" maxlength="100" required>
-                        </div>
-                        <div class="col-md-2">
+                        </td>
+                        <td>
                             <input type="number" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}"
                                 class="form-control" placeholder="単価" min="0" required>
-                        </div>
-                        <div class="col-md-2">
+                        </td>
+                        <td>
                             <input type="number" step="0.01" th:field="*{items[__${stat.index}__].quantity}"
                                 class="form-control" placeholder="数量" min="0" required>
-                        </div>
-                        <div class="col-md-2">
+                        </td>
+                        <td>
                             <input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"
                                 placeholder="単位" maxlength="20" required>
-                        </div>
-                        <div class="col-md-2">
+                        </td>
+                        <td>
                             <button type="button" class="btn btn-danger"
                                 th:onclick="'removeItem(' + ${stat.index} + ')'">削除</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <button type="button" class="btn btn-secondary mb-3" onclick="addItem()">＋項目追加</button>
 
             <!-- 合計金額（自動計算・JavaScript利用） -->
@@ -69,51 +78,50 @@
                 <input type="text" id="totalAmount" class="form-control" readonly>
             </div>
 
-            <!-- ボタン -->
+            <!-- 登録ボタン -->
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">登録</button>
                 <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
             </div>
         </form>
+        <!-- 内訳項目のテンプレート-->
+        <template id="itemRowTemplate">
+            <tr>
+                <td><input type="text" name="items[__index__].itemName" class="form-control" required></td>
+                <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control" required>
+                </td>
+                <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control" required>
+                </td>
+                <td><input type="text" name="items[__index__].unit" class="form-control" required></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeItem(this)">削除</button></td>
+            </tr>
+        </template>
+
     </div>
 
     <div layout:fragment="script">
         <script>
             function addItem() {
-                const itemsDiv = document.getElementById("items");
-                const index = itemsDiv.children.length;
+                const tbody = document.querySelector("#items tbody");
+                const index = tbody.children.length;
+                const template = document.querySelector("#itemRowTemplate").innerHTML;
+                const rowHtml = template.replace(/__index__/g, index);
+                const tempDiv = document.createElement("tbody");
+                tempDiv.innerHTML = rowHtml;
+                const newRow = tempDiv.querySelector("tr");
 
-                const newItem = document.createElement("div");
-                newItem.className = "row mb-2";
-                newItem.innerHTML = `
-            <div class="col-md-3">
-                <input type="text" name="items[${index}].itemName" class="form-control" placeholder="資材・作業名" maxlength="100" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="items[${index}].unitPrice" step="0.01" class="form-control" placeholder="単価" min="0" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="items[${index}].quantity" step="0.01" class="form-control" placeholder="数量" min="0" required>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="items[${index}].unit" class="form-control" placeholder="単位" maxlength="20" required>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger" onclick="removeItem(this)">削除</button>
-            </div>
-        `;
-                itemsDiv.appendChild(newItem);
+                tbody.appendChild(newRow);
             }
 
             function removeItem(button) {
-                const row = button.closest(".row");
+                const row = button.closest("tr");
                 if (row) {
                     row.remove();
                 }
             }
 
             function calculateTotal() {
-                const items = document.querySelectorAll("#items .row");
+                const items = document.querySelectorAll("#items tbody tr");
                 let total = 0;
 
                 items.forEach(item => {

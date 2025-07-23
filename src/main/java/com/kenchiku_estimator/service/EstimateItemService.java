@@ -10,4 +10,7 @@ public interface EstimateItemService {
 
     // 該当の見積書アイテムを取得する
     List<MEstimateItem> findByEstimateId(int id);
+
+    // 見積書アイテムの削除をする
+    void deleteEstimateItem(int id);
 }

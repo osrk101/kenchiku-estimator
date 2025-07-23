@@ -33,7 +33,7 @@
         WHERE e.id = #{id}
     </select>
 
-    <insert id="insert" parameterType="com.kenchiku_estimator.model.MEstimate">
+    <insert id="createNewEstimate" parameterType="com.kenchiku_estimator.model.MEstimate" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO estimates 
         (estimate_number, title, client_name,created_by, created_at)
         VALUES 
@@ -46,8 +46,16 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="delete" parameterType="int">
-        DELETE FROM estimates WHERE id = #{id}
+    <delete id="deleteEstimate" parameterType="int">
+        DELETE 
+        FROM estimates 
+        WHERE id = #{id}
     </delete>
+
+    <select id="countByEstimateNumberPrefix" resultType="int" parameterType="String">
+        SELECT COUNT(*) 
+        FROM estimates 
+        WHERE estimate_number LIKE CONCAT(#{prefix}, '%')
+    </select>
 
 </mapper>

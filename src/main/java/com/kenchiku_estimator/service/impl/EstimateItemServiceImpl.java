@@ -39,4 +39,17 @@ public class EstimateItemServiceImpl implements EstimateItemService {
         log.info("Service 見積書アイテムを取得します");
         return estimateItemMapper.findByEstimateId(id);
     }
+
+    // 見積書アイテムの削除をする
+    @Override
+    public void deleteEstimateItem(int id) {
+        log.info("Service 見積書アイテムを削除します: ID = {}", id);
+        try {
+            estimateItemMapper.deleteEstimateItem(id);
+            log.info("見積書アイテムの削除に成功しました: ID = {}", id);
+        } catch (Exception e) {
+            log.error("見積書アイテムの削除に失敗しました: ID = {}, エラー = {}", id, e.getMessage());
+            throw e;
+        }
+    }
 }
