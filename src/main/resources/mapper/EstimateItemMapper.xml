@@ -3,10 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- Mapperとxmlのマッピング -->
 <mapper namespace="com.kenchiku_estimator.repository.EstimateItemMapper">
-
-    <!-- 見積書アイテムのマッピング -->
 
     <!-- 見積書アイテムを新規作成 -->
     <select id = "createEstimateItem" parameterType="com.kenchiku_estimator.form.EstimateItemForm" resultType="com.kenchiku_estimator.model.MEstimateItem">
@@ -19,6 +16,13 @@
         SELECT * FROM estimate_items 
         WHERE estimate_id = #{id}
     </select>
+
+    <!-- 見積書アイテムの更新をする -->
+    <update id="updateEstimateItem" parameterType="com.kenchiku_estimator.model.MEstimateItem">
+        UPDATE estimate_items
+        SET item_name = #{itemName}, unit_price = #{unitPrice}, quantity = #{quantity}, unit = #{unit}
+        WHERE id = #{id}
+    </update>
 
     <!-- 見積書アイテムの削除をする -->
     <delete id="deleteEstimateItem" parameterType="int">

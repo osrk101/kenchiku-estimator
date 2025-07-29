@@ -23,37 +23,79 @@ public class EstimateServiceImpl implements EstimateService {
     @Override
     public List<MEstimate> getAllEstimates() {
         log.info("Service 全見積書を取得します");
-        return estimateMapper.findAll();
+        try {
+            return estimateMapper.findAll();
+        } catch (Exception e) {
+            log.error("全見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
+            throw e;
+        }
     }
 
     // 該当するIDの見積書を1件取得
     @Override
     public MEstimate getEstimateOne(int EstimateId) {
-        log.info("Service 該当するIDの見積書を1件取得します");
-        return estimateMapper.findById(EstimateId);
+        log.info("Service 該当するIDの見積書を取得します");
+        try {
+            return estimateMapper.findById(EstimateId);
+        } catch (Exception e) {
+            log.error("見積書の取得に失敗しました: ID = {}, エラー = {}", EstimateId, e.getMessage());
+            throw e;
+        }
+    }
+
+    // 見積書番号を生成
+    @Override
+    public String generateEstimateNumber() {
+        log.info("Service 新規見積書番号を生成します");
+        try {
+            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            int count = estimateMapper.countByEstimateNumberPrefix(today);
+            int sequence = count + 1;
+            log.info("Service 見積書番号の生成に成功しました)" + today + "-" + String.format("%02d", sequence));
+            return today + "-" + String.format("%02d", sequence);
+        } catch (Exception e) {
+            log.error("見積書番号の生成に失敗しました: {}", e.getMessage());
+            throw e;
+        }
     }
 
     // 新規見積書の登録
     @Override
     public void createNewEstimate(MEstimate estimate) {
-        log.info("Service 新規見積書の登録クエリを実行します: {}", estimate);
-        estimateMapper.createNewEstimate(estimate);
-        log.info("Service 新規見積書の登録クエリを実行しました: {}", estimate);
+        log.info("Service 新規見積書の登録処理を実行します: {}", estimate);
+        try {
+            estimateMapper.createNewEstimate(estimate);
+            log.info("Service 新規見積書の登録に成功しました: {}", estimate);
+        } catch (Exception e) {
+            log.error("新規見積書の登録に失敗しました: {}", e.getMessage());
+            throw e;
+        }
     }
 
-    // 見積書番号を生成
-    public String generateEstimateNumber() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-        int count = estimateMapper.countByEstimateNumberPrefix(today);
-        int sequence = count + 1;
-        return today + "-" + String.format("%02d", sequence);
+    // 見積書の更新
+    @Override
+    public void updateEstimate(MEstimate estimate) {
+        log.info("Service 見積書の更新処理を実行します: {}", estimate);
+        try {
+            estimateMapper.updateEstimate(estimate);
+            log.info("Service 見積書の更新に成功しました: {}", estimate);
+        } catch (Exception e) {
+            log.error("見積書の更新に失敗しました: {}", e.getMessage());
+            throw e;
+        }
     }
 
     // 見積書の削除
+    @Override
     public void deleteEstimate(int id) {
-        log.info("Service 見積書を削除します: ID = {}", id);
-        estimateMapper.deleteEstimate(id);
-        log.info("見積書の削除に成功しました: ID = {}", id);
+        log.info("Service 見積書を削除処理を実行します: ID = {}", id);
+        try {
+            estimateMapper.deleteEstimate(id);
+            log.info("Service 見積書の削除に成功しました: ID = {}", id);
+        } catch (Exception e) {
+            log.error("見積書の削除に失敗しました: ID = {}, エラー = {}", id, e.getMessage());
+            throw e;
+        }
     }
 
 }

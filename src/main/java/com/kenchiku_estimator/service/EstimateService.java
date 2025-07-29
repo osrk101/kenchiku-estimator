@@ -20,4 +20,7 @@ public interface EstimateService {
 
     // 見積書の削除
     public void deleteEstimate(int id);
+
+    // 見積書の更新
+    public void updateEstimate(MEstimate estimate);
 }

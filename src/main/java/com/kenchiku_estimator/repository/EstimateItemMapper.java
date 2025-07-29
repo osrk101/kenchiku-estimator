@@ -10,11 +10,14 @@ import com.kenchiku_estimator.model.MEstimateItem;
 public interface EstimateItemMapper {
 
     // 見積書アイテムを新規作成
-    void createEstimateItem(MEstimateItem estimateItem);
+    void createEstimateItem(MEstimateItem Item);
 
     // 該当の見積書アイテムを取得する
     public List<MEstimateItem> findByEstimateId(int id);
 
     // 見積書アイテムの削除をする
     void deleteEstimateItem(int id);
+
+    // 見積書アイテムの更新をする
+    void updateEstimateItem(MEstimateItem item);
 }

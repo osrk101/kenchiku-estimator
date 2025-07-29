@@ -40,9 +40,9 @@
         (#{estimateNumber}, #{title}, #{clientName}, #{createdBy}, CURRENT_DATE)
     </insert>
 
-    <update id="update" parameterType="com.kenchiku_estimator.model.MEstimate">
+    <update id="updateEstimate" parameterType="com.kenchiku_estimator.model.MEstimate">
         UPDATE estimates
-        SET title = #{title}, created_by = #{createdBy}, created_at = #{createdAt}
+        SET title = #{title}, created_by = #{createdBy}, created_at = CURRENT_DATE
         WHERE id = #{id}
     </update>
 

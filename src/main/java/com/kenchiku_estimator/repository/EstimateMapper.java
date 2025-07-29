@@ -19,7 +19,7 @@ public interface EstimateMapper {
     void createNewEstimate(MEstimate estimate);
 
     // 更新
-    void update(MEstimate estimate);
+    void updateEstimate(MEstimate estimate);
 
     // 削除
     void deleteEstimate(int id);

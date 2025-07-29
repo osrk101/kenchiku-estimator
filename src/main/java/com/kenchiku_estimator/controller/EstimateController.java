@@ -1,6 +1,7 @@
 package com.kenchiku_estimator.controller;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kenchiku_estimator.form.EstimateForm;
 import com.kenchiku_estimator.form.EstimateItemForm;
@@ -43,7 +45,7 @@ public class EstimateController {
     @Autowired
     ModelMapper modelMapper;
 
-    // 指定されたIDの見積書を取得してスコープに格納する
+    // 指定されたIDの見積書を取得する
     public MEstimate findEstimateAndItems(int id, Model model) throws Exception {
         MEstimate estimate = estimateService.getEstimateOne(id);
         log.info("取得された見積書 = {}", estimate);
@@ -63,6 +65,32 @@ public class EstimateController {
         model.addAttribute("estimateForm", estimateForm);
         List<MAccount> fullnameList = accountService.getAllAccountsFullname();
         model.addAttribute("fullnameList", fullnameList);
+    }
+
+    // EstimateItemFormをセットアップする
+    public void setupEstimateItemForm(MEstimateItem item, EstimateItemForm estimateItemForm, Model model) {
+        modelMapper.map(item, estimateItemForm);
+        model.addAttribute("estimateItemForm", estimateItemForm);
+    }
+
+    // 見積書とアイテムを保存する共通処理
+    private void saveEstimateWithItems(MEstimate estimate, List<EstimateItemForm> itemForms, boolean isNew) {
+        if (isNew) {
+            estimateService.createNewEstimate(estimate);
+        } else {
+            estimateService.updateEstimate(estimate);
+        }
+        estimate.setId(estimate.getId());
+        for (EstimateItemForm itemForm : itemForms) {
+            MEstimateItem item = modelMapper.map(itemForm, MEstimateItem.class);
+            item.setEstimateId(estimate.getId());
+
+            if (isNew || item.getId() == 0) {
+                estimateItemService.createEstimateItem(item);
+            } else {
+                estimateItemService.updateEstimateItem(item);
+            }
+        }
     }
 
     // 見積書を全取得して見積書一覧へ送る 検索ワードが入力されていれば検索して見積書一覧へ送る
@@ -108,6 +136,78 @@ public class EstimateController {
         return "estimates/edit";
     }
 
+    // 既存見積書の更新処理
+    @PostMapping("/edit/{id}")
+    public String updateEstimate(@PathVariable int id, @Validated EstimateForm estimateForm,
+            BindingResult bindingResult, @RequestParam(name = "action") String action,
+            Model model, RedirectAttributes redirectAttributes) throws Exception {
+        if (bindingResult.hasErrors()) {
+            log.error("見積書の入力内容にエラーがあります: {}", bindingResult.getAllErrors());
+            setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
+            return "estimates/edit";
+        }
+
+        if ("update".equals(action)) {
+            log.info("controller 既存見積書の更新処理を開始");
+            try {
+                MEstimate estimate = modelMapper.map(estimateForm, MEstimate.class);
+                estimate.setId(id);
+                saveEstimateWithItems(estimate, estimateForm.getItems(), false);
+                log.info("見積書（ID: {}）の更新を完了しました", id);
+
+                log.info("見積書の更新が完了しました。見積書一覧へリダイレクトします");
+                redirectAttributes.addFlashAttribute("message", "見積書を更新しました。");
+                return "redirect:/estimates";
+            } catch (Exception e) {
+                log.error("見積書の更新に失敗しました: {}", e.getMessage());
+                setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
+                List<MEstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
+                List<EstimateItemForm> itemForms = new ArrayList<>();
+                for (MEstimateItem item : estimateItems) {
+                    EstimateItemForm itemForm = new EstimateItemForm();
+                    setupEstimateItemForm(item, itemForm, model);
+                    itemForms.add(itemForm);
+                }
+                estimateForm.setItems(itemForms);
+                model.addAttribute("estimateForm", estimateForm);
+                bindingResult.reject("error.update", "見積書の更新に失敗しました。");
+            }
+            return "estimates/edit";
+            // 別件で保存の処理
+        } else if ("saveAsNew".equals(action))
+
+        {
+            log.info("controller 別件で保存の処理を開始");
+            try {
+                MEstimate estimate = modelMapper.map(estimateForm, MEstimate.class);
+                estimate.setId(0); // 新規登録のためIDをリセット
+                String estimateNumber = estimateService.generateEstimateNumber();
+                estimate.setEstimateNumber(estimateNumber);
+                saveEstimateWithItems(estimate, estimateForm.getItems(), true);
+                log.info("新規見積書の登録が完了しました。見積書一覧へリダイレクトします");
+                redirectAttributes.addFlashAttribute("message", "別件で見積書を保存しました。");
+                return "redirect:/estimates";
+            } catch (Exception e) {
+                log.error("別件での見積書保存に失敗しました: {}", e.getMessage());
+                bindingResult.reject("error.saveAsNew", "別件での見積書保存に失敗しました。");
+                setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
+                List<MEstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
+                List<EstimateItemForm> itemForms = new ArrayList<>();
+                for (MEstimateItem item : estimateItems) {
+                    EstimateItemForm itemForm = new EstimateItemForm();
+                    setupEstimateItemForm(item, itemForm, model);
+                    itemForms.add(itemForm);
+                }
+                estimateForm.setItems(itemForms);
+                model.addAttribute("estimateForm", estimateForm);
+            }
+            return "estimates/edit";
+        }
+        log.warn("不明なアクション: {}", action);
+        bindingResult.reject("error.action", "不明なアクションです。");
+        return "estimates/edit";
+    }
+
     // 新規見積書作成画面を表示する
     @GetMapping("/create")
     public String viewCreateEstimateForm(EstimateForm estimateForm, MAccount mAccount, Model model) {
@@ -135,15 +235,8 @@ public class EstimateController {
             MEstimate estimate = modelMapper.map(estimateForm, MEstimate.class);
             String estimateNumber = estimateService.generateEstimateNumber();
             estimate.setEstimateNumber(estimateNumber);
-            estimateService.createNewEstimate(estimate);
-            log.info("新規見積書の登録を完了しました: {}", estimate);
-
-            for (EstimateItemForm itemForm : estimateForm.getItems()) {
-                MEstimateItem item = modelMapper.map(itemForm, MEstimateItem.class);
-                item.setEstimateId(estimate.getId());
-                log.info("新規見積書アイテムを登録を開始します: {}", itemForm);
-                estimateItemService.createEstimateItem(item);
-            }
+            estimate.setId(0);
+            saveEstimateWithItems(estimate, estimateForm.getItems(), true);
         } catch (Exception e) {
             log.error("新規見積書の登録に失敗しました: {}", e.getMessage());
             bindingResult.reject("error.create", "新規見積書の登録に失敗しました。");
