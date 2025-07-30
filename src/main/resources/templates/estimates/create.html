@@ -14,18 +14,20 @@
         <form class="mb-3 row g-2" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
             <div class="col-4">
                 <label for="title" class="form-label">件名</label>
-                <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100" required>
+                <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100"
+                    oninvalid="this.setCustomValidity('件名を入力してください')" oninput="setCustomValidity('')" required>
                 <div class="form-text">※100文字以内</div>
             </div>
             <div class="col-4">
                 <label for="clientName" class="form-label">顧客名</label>
                 <input type="text" th:field="*{clientName}" class="form-control" id="clientName" maxlength="100"
-                    required>
+                    oninvalid="this.setCustomValidity('顧客名を入力してください')" oninput="setCustomValidity('')" required>
                 <div class="form-text">※100文字以内</div>
             </div>
             <div class="col-4">
                 <label for="createdBy" class="form-label">担当者</label>
-                <select class="form-select" id="createdBy" name="createdBy" required>
+                <select class="form-select" id="createdBy" name="createdBy"
+                    oninvalid="this.setCustomValidity('担当者を選択してください')" oninput="setCustomValidity('')" required>
                     <option value=""></option>
                     <option th:each="account : ${fullnameList}" th:value="${account.id}" th:text="${account.fullname}"
                         th:selected="${account.id} == ${selectedAccountId}">

@@ -31,6 +31,18 @@ public class EstimateServiceImpl implements EstimateService {
         }
     }
 
+    // 検索ワードに該当する見積書を取得
+    @Override
+    public List<MEstimate> getSearchEstimates(String searchWords) {
+        log.info("Service 検索ワードに該当する見積書を取得します: {}", searchWords);
+        try {
+            return estimateMapper.findBySearchWords(searchWords);
+        } catch (Exception e) {
+            log.error("検索ワードによる見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
+            throw e;
+        }
+    }
+
     // 該当するIDの見積書を1件取得
     @Override
     public MEstimate getEstimateOne(int EstimateId) {

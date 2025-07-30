@@ -8,27 +8,25 @@
 
 <body>
     <div layout:fragment="content">
-        <h1 class="mb-4">見積書一覧</h1>
-
-
-
-        <!-- 検索フォーム -->
-        <form class="mb-3 row g-2" th:action="@{/estimates}" method="get">
+        <div class="row mt-4 mb-4">
+            <!-- メッセージ表示 -->
+            <div class="col-4">
+                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+            </div>
+            <!-- タイトルと新規作成ボタン -->
             <div class="col-auto">
-                <input type="text" class="form-control" name="title">
-
+                <h1>見積書一覧</h1>
+            </div>
+            <div class="col-auto">
+                <input type="text" class="form-control" name="searchWords" th:value="${searchWords}"
+                    placeholder="見積番号、件名、顧客名" />
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">検索</button>
             </div>
-            <div class="col-2 left">
+            <div class="col-auto">
                 <a class="btn btn-success" th:href="@{/estimates/create}">新規作成</a>
             </div>
-        </form>
-
-        <!-- メッセージ表示 -->
-        <div class="mb-3">
-            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
         </div>
 
         <!-- 見積書一覧テーブル -->
@@ -39,7 +37,7 @@
                     <th>件名</th>
                     <th>顧客名</th>
                     <th>担当者</th>
-                    <th>作成日</th>
+                    <th>更新日</th>
                     <th>操作</th>
                 </tr>
             </thead>

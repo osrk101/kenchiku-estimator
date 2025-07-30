@@ -1,6 +1,7 @@
 package com.kenchiku_estimator.controller;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.modelmapper.ModelMapper;
@@ -52,10 +53,17 @@ public class EstimateController {
         if (estimate == null) {
             throw new Exception("指定された見積書（ID: " + id + "）は存在しません。");
         }
-        List<MEstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
-        log.info("取得された見積書アイテム = {}", estimateItems);
+        List<MEstimateItem> items = estimateItemService.findByEstimateId(id);
+        log.info("取得された見積書アイテム = {}", items);
+        // 合計金額を計算
+        BigDecimal total = BigDecimal.ZERO;
+        for (MEstimateItem item : items) {
+            BigDecimal amount = item.getUnitPrice().multiply(item.getQuantity());
+            total = total.add(amount);
+        }
         model.addAttribute("estimate", estimate);
-        model.addAttribute("estimateItems", estimateItems);
+        model.addAttribute("estimateItems", items);
+        model.addAttribute("totalAmount", total);
         return estimate;
     }
 
@@ -95,11 +103,18 @@ public class EstimateController {
 
     // 見積書を全取得して見積書一覧へ送る 検索ワードが入力されていれば検索して見積書一覧へ送る
     @GetMapping
-    public String viewListEstimates(@ModelAttribute("message") String message, Model model) {
-        List<MEstimate> estimatesList = estimateService.getAllEstimates();
-        log.info("取得された見積書一覧 = {}", estimatesList);
-        model.addAttribute("estimatesList", estimatesList);
-        log.info("controller 見積書一覧を表示");
+    public String viewListEstimates(@ModelAttribute("message") String message, String searchWords, Model model) {
+        List<MEstimate> estimates = null;
+        if (searchWords == null) {
+            log.debug("すべての見積書を取得します。");
+            estimates = estimateService.getAllEstimates();
+        } else {
+            log.debug("検索条件を用いた見積書検索をします。：{}", searchWords);
+            estimates = estimateService.getSearchEstimates(searchWords);
+        }
+        log.info("取得された見積書の数 = {}", estimates.size());
+        model.addAttribute("estimatesList", estimates);
+        model.addAttribute("searchWords", searchWords);
         return "estimates";
     }
 
@@ -173,6 +188,7 @@ public class EstimateController {
                 bindingResult.reject("error.update", "見積書の更新に失敗しました。");
             }
             return "estimates/edit";
+
             // 別件で保存の処理
         } else if ("saveAsNew".equals(action))
 
@@ -272,5 +288,4 @@ public class EstimateController {
         }
         return "redirect:/estimates";
     }
-
 }

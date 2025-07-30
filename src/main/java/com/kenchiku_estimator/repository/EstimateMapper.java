@@ -26,4 +26,7 @@ public interface EstimateMapper {
 
     // 見積番号の年月日で件数を取得
     int countByEstimateNumberPrefix(String prefix);
+
+    // 検索ワードに該当する見積書を取得
+    List<MEstimate> findBySearchWords(String searchWords);
 }

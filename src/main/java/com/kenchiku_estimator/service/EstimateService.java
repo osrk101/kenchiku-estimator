@@ -23,4 +23,7 @@ public interface EstimateService {
 
     // 見積書の更新
     public void updateEstimate(MEstimate estimate);
+
+    // 検索ワードに該当する見積書を取得
+    public List<MEstimate> getSearchEstimates(String searchWords);
 }
