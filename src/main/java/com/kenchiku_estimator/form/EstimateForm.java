@@ -24,7 +24,7 @@ public class EstimateForm {
     private String clientName;
 
     @NotNull(message = "担当者は必須です")
-    private int createdBy;
+    private Integer createdBy;
 
     private List<EstimateItemForm> items = new ArrayList<>();
 
