@@ -51,7 +51,7 @@ public class EstimateController {
         MEstimate estimate = estimateService.getEstimateOne(id);
         log.info("取得された見積書 = {}", estimate);
         if (estimate == null) {
-            throw new Exception("指定された見積書（ID: " + id + "）は存在しません。");
+            return null;
         }
         List<MEstimateItem> items = estimateItemService.findByEstimateId(id);
         log.info("取得された見積書アイテム = {}", items);
@@ -103,7 +103,7 @@ public class EstimateController {
 
     // 見積書を全取得して見積書一覧へ送る 検索ワードが入力されていれば検索して見積書一覧へ送る
     @GetMapping
-    public String viewListEstimates(@ModelAttribute("message") String message, String searchWords, Model model) {
+    public String viewListEstimates(String searchWords, Model model) {
         List<MEstimate> estimates = null;
         if (searchWords == null) {
             log.debug("すべての見積書を取得します。");
@@ -120,9 +120,15 @@ public class EstimateController {
 
     // 見積書の詳細ページを表示する
     @GetMapping("/detail/{id}")
-    public String viewEstimateDetail(@PathVariable int id, Model model) throws Exception {
+    public String viewEstimateDetail(@PathVariable int id, Model model, RedirectAttributes redirectAttributes)
+            throws Exception {
         log.info("controller 見積書詳細画面を表示");
-        findEstimateAndItems(id, model);
+        MEstimate estimate = findEstimateAndItems(id, model);
+        if (estimate == null) {
+            redirectAttributes.addFlashAttribute("message", "該当するIDの見積書は存在しません");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/estimates";
+        }
         return "estimates/detail";
     }
 
@@ -172,6 +178,7 @@ public class EstimateController {
 
                 log.info("見積書の更新が完了しました。見積書一覧へリダイレクトします");
                 redirectAttributes.addFlashAttribute("message", "見積書を更新しました。");
+                redirectAttributes.addFlashAttribute("messageType", "success");
                 return "redirect:/estimates";
             } catch (Exception e) {
                 log.error("見積書の更新に失敗しました: {}", e.getMessage());
@@ -202,6 +209,7 @@ public class EstimateController {
                 saveEstimateWithItems(estimate, estimateForm.getItems(), true);
                 log.info("新規見積書の登録が完了しました。見積書一覧へリダイレクトします");
                 redirectAttributes.addFlashAttribute("message", "別件で見積書を保存しました。");
+                redirectAttributes.addFlashAttribute("messageType", "success");
                 return "redirect:/estimates";
             } catch (Exception e) {
                 log.error("別件での見積書保存に失敗しました: {}", e.getMessage());
@@ -260,6 +268,7 @@ public class EstimateController {
         }
         log.info("新規見積書の登録が完了しました。見積書一覧へリダイレクトします");
         redirectAttributes.addFlashAttribute("message", "見積書を登録しました。");
+        redirectAttributes.addFlashAttribute("messageType", "success");
         return "redirect:/estimates";
     }
 
@@ -282,9 +291,11 @@ public class EstimateController {
             estimateService.deleteEstimate(id); // 見積書削除
             log.info("見積書（ID: {}）を削除しました", id);
             redirectAttributes.addFlashAttribute("message", "見積書を削除しました。");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } catch (Exception e) {
             log.error("見積書の削除に失敗しました: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("message", "見積書の削除に失敗しました。");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
         return "redirect:/estimates";
     }

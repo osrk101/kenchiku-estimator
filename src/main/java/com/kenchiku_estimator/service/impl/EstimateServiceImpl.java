@@ -1,12 +1,17 @@
 package com.kenchiku_estimator.service.impl;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.kenchiku_estimator.exception.EstimateNotFoundException;
 import com.kenchiku_estimator.model.MEstimate;
 import com.kenchiku_estimator.repository.EstimateMapper;
 import com.kenchiku_estimator.service.EstimateService;
@@ -25,6 +30,9 @@ public class EstimateServiceImpl implements EstimateService {
         log.info("Service 全見積書を取得します");
         try {
             return estimateMapper.findAll();
+        } catch (DataAccessException e) {
+            log.error("全見積書の取得に失敗しました: データベースエラー = {}", e.getMessage());
+            throw new RuntimeException("全見積書の取得に失敗しました", e);
         } catch (Exception e) {
             log.error("全見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
             throw e;
@@ -37,6 +45,9 @@ public class EstimateServiceImpl implements EstimateService {
         log.info("Service 検索ワードに該当する見積書を取得します: {}", searchWords);
         try {
             return estimateMapper.findBySearchWords(searchWords);
+        } catch (DataAccessException e) {
+            log.error("検索ワードによる見積書の取得に失敗しました: データベースエラー = {}", e.getMessage());
+            throw new RuntimeException("検索ワードによる見積書の取得に失敗しました", e);
         } catch (Exception e) {
             log.error("検索ワードによる見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
             throw e;
@@ -47,12 +58,20 @@ public class EstimateServiceImpl implements EstimateService {
     @Override
     public MEstimate getEstimateOne(int EstimateId) {
         log.info("Service 該当するIDの見積書を取得します");
+        if (EstimateId <= 0) {
+            throw new IllegalArgumentException("不正なIDが指定されました");
+        }
         try {
+            log.info("Service 見積書の取得を開始: ID = {}", EstimateId);
             return estimateMapper.findById(EstimateId);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             log.error("見積書の取得に失敗しました: ID = {}, エラー = {}", EstimateId, e.getMessage());
+            throw new EstimateNotFoundException("見積書が見つかりません: ID = " + EstimateId);
+        } catch (Exception e) {
+            log.error("見積書の取得に失敗しました: {}", e.getMessage());
             throw e;
         }
+
     }
 
     // 見積書番号を生成
@@ -65,6 +84,9 @@ public class EstimateServiceImpl implements EstimateService {
             int sequence = count + 1;
             log.info("Service 見積書番号の生成に成功しました)" + today + "-" + String.format("%02d", sequence));
             return today + "-" + String.format("%02d", sequence);
+        } catch (DataAccessException e) {
+            log.error("見積書番号の生成に失敗しました: データベースエラー = {}", e.getMessage());
+            throw new RuntimeException("見積書番号の生成に失敗しました", e);
         } catch (Exception e) {
             log.error("見積書番号の生成に失敗しました: {}", e.getMessage());
             throw e;
@@ -78,6 +100,9 @@ public class EstimateServiceImpl implements EstimateService {
         try {
             estimateMapper.createNewEstimate(estimate);
             log.info("Service 新規見積書の登録に成功しました: {}", estimate);
+        } catch (DataAccessException e) {
+            log.error("新規見積書の登録に失敗しました: データベースエラー = {}", e.getMessage());
+            throw new RuntimeException("新規見積書の登録に失敗しました", e);
         } catch (Exception e) {
             log.error("新規見積書の登録に失敗しました: {}", e.getMessage());
             throw e;
@@ -91,6 +116,9 @@ public class EstimateServiceImpl implements EstimateService {
         try {
             estimateMapper.updateEstimate(estimate);
             log.info("Service 見積書の更新に成功しました: {}", estimate);
+        } catch (DataAccessException e) {
+            log.error("見積書の更新に失敗しました: データベースエラー = {}", e.getMessage());
+            throw new RuntimeException("見積書の更新に失敗しました", e);
         } catch (Exception e) {
             log.error("見積書の更新に失敗しました: {}", e.getMessage());
             throw e;
@@ -104,6 +132,9 @@ public class EstimateServiceImpl implements EstimateService {
         try {
             estimateMapper.deleteEstimate(id);
             log.info("Service 見積書の削除に成功しました: ID = {}", id);
+        } catch (DataAccessException e) {
+            log.error("見積書の削除に失敗しました: ID = {}, データベースエラー = {}", id, e.getMessage());
+            throw new RuntimeException("見積書の削除に失敗しました", e);
         } catch (Exception e) {
             log.error("見積書の削除に失敗しました: ID = {}, エラー = {}", id, e.getMessage());
             throw e;

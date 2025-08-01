@@ -8,26 +8,29 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="row mt-4 mb-4">
-            <!-- メッセージ表示 -->
-            <div class="col-4">
-                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+        <!-- メッセージ表示 -->
+        <form th:action="@{/estimates}" method="get" class="row g-2 align-items-center mb-4">
+            <div class="col">
+                <div th:if="${message != null and !#strings.isEmpty(message)}">
+                    <div th:class="'alert ' + (${messageType} == 'error' ? 'alert-danger' : 'alert-success')"
+                        th:text="${message}"></div>
+                </div>
             </div>
-            <!-- タイトルと新規作成ボタン -->
-            <div class="col-auto">
+
+            <!-- タイトル -->
+            <div class="col text-center">
                 <h1>見積書一覧</h1>
             </div>
-            <div class="col-auto">
+            <!-- 検索フォーム -->
+            <div class="col-auto d-flex gap-2">
                 <input type="text" class="form-control" name="searchWords" th:value="${searchWords}"
                     placeholder="見積番号、件名、顧客名" />
+                <button type="submit" class="btn btn-primary" style="white-space: nowrap;">検索</button>
+                <!-- 新規作成ボタン -->
+                <a class="btn btn-success" th:href="@{/estimates/create}" style="white-space: nowrap;">新規作成</a>
             </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">検索</button>
-            </div>
-            <div class="col-auto">
-                <a class="btn btn-success" th:href="@{/estimates/create}">新規作成</a>
-            </div>
-        </div>
+        </form>
 
         <!-- 見積書一覧テーブル -->
         <table class="table table-bordered table-hover">
