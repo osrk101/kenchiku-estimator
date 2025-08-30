@@ -3,8 +3,6 @@ package com.kenchiku_estimator.form;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
