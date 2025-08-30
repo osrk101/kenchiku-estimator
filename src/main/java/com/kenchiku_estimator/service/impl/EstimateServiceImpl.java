@@ -31,7 +31,7 @@ public class EstimateServiceImpl implements EstimateService {
             log.error("全見積書の取得に失敗しました: データベースエラー = {}", e.getMessage());
             throw new RuntimeException("全見積書の取得に失敗しました", e);
         } catch (Exception e) {
-            log.error("全見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
+            log.error("予期せぬエラーが発生しました", e.getMessage());
             throw e;
         }
     }
@@ -53,20 +53,21 @@ public class EstimateServiceImpl implements EstimateService {
 
     // 該当するIDの見積書を1件取得
     @Override
-    public MEstimate getEstimateOne(int EstimateId) {
+    public MEstimate getEstimateOne(int estimateId) {
         log.info("Service 該当するIDの見積書を取得します");
-        if (EstimateId <= 0) {
+        if (estimateId <= 0) {
             throw new IllegalArgumentException("不正なIDが指定されました");
         }
         try {
-            log.info("Service 見積書の取得を開始: ID = {}", EstimateId);
-            return estimateMapper.findById(EstimateId);
+            log.info("Service 見積書の取得を開始: ID = {}", estimateId);
+            MEstimate estimate = estimateMapper.findById(estimateId);
+            if (estimate == null) {
+                throw new EstimateNotFoundException("見積書が見つかりません: ID = " + estimateId);
+            }
+            return estimate;
         } catch (DataAccessException e) {
-            log.error("見積書の取得に失敗しました: ID = {}, エラー = {}", EstimateId, e.getMessage());
-            throw new EstimateNotFoundException("見積書が見つかりません: ID = " + EstimateId);
-        } catch (Exception e) {
-            log.error("見積書の取得に失敗しました: {}", e.getMessage());
-            throw e;
+            log.error("データベースアクセスエラー: ID = {}, エラー = {}", estimateId, e.getMessage(), e);
+            throw new DataBaseAccessException("データベースアクセスエラーが発生しました", e);
         }
 
     }

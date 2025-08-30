@@ -47,28 +47,20 @@ public class EstimateController {
 
     // 指定されたIDの見積書を取得する
     public MEstimate findEstimateAndItems(int id, Model model) throws Exception {
-        try {
-            MEstimate estimate = estimateService.getEstimateOne(id);
-            log.info("取得された見積書 = {}", estimate);
-            if (estimate == null) {
-                return null;
-            }
-            List<MEstimateItem> items = estimateItemService.findByEstimateId(id);
-            log.info("取得された見積書アイテム = {}", items);
-            // 合計金額を計算
-            BigDecimal total = BigDecimal.ZERO;
-            for (MEstimateItem item : items) {
-                BigDecimal amount = item.getUnitPrice().multiply(item.getQuantity());
-                total = total.add(amount);
-            }
-            model.addAttribute("estimate", estimate);
-            model.addAttribute("estimateItems", items);
-            model.addAttribute("totalAmount", total);
-            return estimate;
-        } catch (Exception e) {
-            log.error("見積書とアイテムの取得に失敗しました: {}", e.getMessage());
-            throw e;
+        MEstimate estimate = estimateService.getEstimateOne(id);
+        log.info("取得された見積書 = {}", estimate);
+        List<MEstimateItem> items = estimateItemService.findByEstimateId(id);
+        log.info("取得された見積書アイテム = {}", items);
+        // 合計金額を計算
+        BigDecimal total = BigDecimal.ZERO;
+        for (MEstimateItem item : items) {
+            BigDecimal amount = item.getUnitPrice().multiply(item.getQuantity());
+            total = total.add(amount);
         }
+        model.addAttribute("estimate", estimate);
+        model.addAttribute("estimateItems", items);
+        model.addAttribute("totalAmount", total);
+        return estimate;
     }
 
     // EstimateFormをセットアップする
