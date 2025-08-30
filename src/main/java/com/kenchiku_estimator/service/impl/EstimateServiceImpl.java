@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kenchiku_estimator.exception.DataBaseAccessException;
 import com.kenchiku_estimator.exception.EstimateNotFoundException;
 import com.kenchiku_estimator.model.MEstimate;
 import com.kenchiku_estimator.repository.EstimateMapper;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Transactional
 public class EstimateServiceImpl implements EstimateService {
     @Autowired
     EstimateMapper estimateMapper;
@@ -28,11 +31,8 @@ public class EstimateServiceImpl implements EstimateService {
         try {
             return estimateMapper.findAll();
         } catch (DataAccessException e) {
-            log.error("全見積書の取得に失敗しました: データベースエラー = {}", e.getMessage());
-            throw new RuntimeException("全見積書の取得に失敗しました", e);
-        } catch (Exception e) {
-            log.error("予期せぬエラーが発生しました", e.getMessage());
-            throw e;
+            log.error("全見積書の取得に失敗しました。データベースエラー = {}", e.getMessage());
+            throw new DataBaseAccessException("全見積書の取得に失敗しました", e);
         }
     }
 
@@ -43,11 +43,8 @@ public class EstimateServiceImpl implements EstimateService {
         try {
             return estimateMapper.findBySearchWords(searchWords);
         } catch (DataAccessException e) {
-            log.error("検索ワードによる見積書の取得に失敗しました: データベースエラー = {}", e.getMessage());
-            throw new RuntimeException("検索ワードによる見積書の取得に失敗しました", e);
-        } catch (Exception e) {
-            log.error("検索ワードによる見積書の取得に失敗しました: {}エラー = {}", e.getMessage());
-            throw e;
+            log.error("検索ワードによる見積書の取得に失敗しました。データベースエラー = {}", e.getMessage());
+            throw new DataBaseAccessException("検索ワードによる見積書の取得に失敗しました", e);
         }
     }
 
@@ -66,8 +63,8 @@ public class EstimateServiceImpl implements EstimateService {
             }
             return estimate;
         } catch (DataAccessException e) {
-            log.error("データベースアクセスエラー: ID = {}, エラー = {}", estimateId, e.getMessage(), e);
-            throw new DataBaseAccessException("データベースアクセスエラーが発生しました", e);
+            log.error("見積書の取得に失敗しました。データベースエラー: ID = {}, エラー = {}", estimateId, e.getMessage(), e);
+            throw new DataBaseAccessException("見積書の取得に失敗しました。", e);
         }
 
     }
@@ -84,10 +81,7 @@ public class EstimateServiceImpl implements EstimateService {
             return today + "-" + String.format("%02d", sequence);
         } catch (DataAccessException e) {
             log.error("見積書番号の生成に失敗しました: データベースエラー = {}", e.getMessage());
-            throw new RuntimeException("見積書番号の生成に失敗しました", e);
-        } catch (Exception e) {
-            log.error("見積書番号の生成に失敗しました: {}", e.getMessage());
-            throw e;
+            throw new DataBaseAccessException("見積書番号の生成に失敗しました", e);
         }
     }
 
@@ -100,10 +94,7 @@ public class EstimateServiceImpl implements EstimateService {
             log.info("Service 新規見積書の登録に成功しました: {}", estimate);
         } catch (DataAccessException e) {
             log.error("新規見積書の登録に失敗しました: データベースエラー = {}", e.getMessage());
-            throw new RuntimeException("新規見積書の登録に失敗しました", e);
-        } catch (Exception e) {
-            log.error("新規見積書の登録に失敗しました: {}", e.getMessage());
-            throw e;
+            throw new DataBaseAccessException("新規見積書の登録に失敗しました", e);
         }
     }
 
@@ -112,14 +103,14 @@ public class EstimateServiceImpl implements EstimateService {
     public void updateEstimate(MEstimate estimate) {
         log.info("Service 見積書の更新処理を実行します: {}", estimate);
         try {
-            estimateMapper.updateEstimate(estimate);
+            int updated = estimateMapper.updateEstimate(estimate);
+            if( updated == 0) {
+				throw new EstimateNotFoundException("見積書が見つかりません: ID = " + estimate.getId());
+			}
             log.info("Service 見積書の更新に成功しました: {}", estimate);
         } catch (DataAccessException e) {
-            log.error("見積書の更新に失敗しました: データベースエラー = {}", e.getMessage());
-            throw new RuntimeException("見積書の更新に失敗しました", e);
-        } catch (Exception e) {
-            log.error("見積書の更新に失敗しました: {}", e.getMessage());
-            throw e;
+            log.error("見積書の更新に失敗しました: ID= {}データベースエラー = {}", estimate.getId(), e.getMessage());
+            throw new DataBaseAccessException("見積書の更新に失敗しました", e);
         }
     }
 
@@ -128,14 +119,14 @@ public class EstimateServiceImpl implements EstimateService {
     public void deleteEstimate(int id) {
         log.info("Service 見積書を削除処理を実行します: ID = {}", id);
         try {
-            estimateMapper.deleteEstimate(id);
+            int deleted = estimateMapper.deleteEstimate(id);
+            if( deleted == 0) {
+            					throw new EstimateNotFoundException("見積書が見つかりません: ID = " + id);
+            }
             log.info("Service 見積書の削除に成功しました: ID = {}", id);
         } catch (DataAccessException e) {
             log.error("見積書の削除に失敗しました: ID = {}, データベースエラー = {}", id, e.getMessage());
-            throw new RuntimeException("見積書の削除に失敗しました", e);
-        } catch (Exception e) {
-            log.error("見積書の削除に失敗しました: ID = {}, エラー = {}", id, e.getMessage());
-            throw e;
+            throw new DataBaseAccessException("見積書の削除に失敗しました", e);
         }
     }
 

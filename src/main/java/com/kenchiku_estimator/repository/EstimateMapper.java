@@ -19,10 +19,10 @@ public interface EstimateMapper {
     void createNewEstimate(MEstimate estimate);
 
     // 更新
-    void updateEstimate(MEstimate estimate);
+    int updateEstimate(MEstimate estimate);
 
     // 削除
-    void deleteEstimate(int id);
+    int deleteEstimate(int id);
 
     // 見積番号の年月日で件数を取得
     int countByEstimateNumberPrefix(String prefix);
