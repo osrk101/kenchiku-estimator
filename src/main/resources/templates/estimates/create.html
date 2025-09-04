@@ -1,170 +1,132 @@
 <!-- templates/estimates/create.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/commonLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>見積書新規作成</title>
+<meta charset="UTF-8">
+<title>見積書新規作成</title>
 </head>
 
 <body>
-    <div layout:fragment="content">
-        <h1 class="mb-4">見積書 新規作成</h1>
-        <form class="mb-3 row g-2" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
-            <div class="col-4">
-                <label for="title" class="form-label">件名</label>
-                <input type="text" th:field="*{title}" class="form-control">
-                <th:block th:with="fieldName='title'">
-                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{title}" class="text-danger"></div>
-                </th:block>
-                <div class="form-text">※100文字以内</div>
-            </div>
-            <div class="col-4">
-                <label for="clientName" class="form-label">顧客名</label>
-                <input type="text" th:field="*{clientName}" class="form-control">
-                <th:block th:with="fieldName='clientName'">
-                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{clientName}" class="text-danger"></div>
-                </th:block>
-                <div class="form-text">※100文字以内</div>
-            </div>
-            <div class="col-4">
-                <label for="createdBy" class="form-label">担当者</label>
-                <select class="form-select" th:field="*{createdBy}">
-                    <option value=""></option>
-                    <option th:each="account : ${fullnameList}" th:value="${account.id}" th:text="${account.fullname}"
-                        th:selected="${account.id} == ${selectedAccountId}">
-                    </option>
-                </select>
-                <th:block th:with="fieldName='createdBy'">
-                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{createdBy}" class="text-danger"></div>
-                </th:block>
-            </div>
+  <div layout:fragment="content">
+    <h1 class="mb-4">見積書 新規作成</h1>
+    <form class="mb-3 row g-2" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
+      <div class="col-4">
+        <label for="title" class="form-label">件名</label> <input type="text" th:field="*{title}" class="form-control">
+        <th:block th:with="fieldName='title'">
+          <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{title}" class="text-danger"></div>
+        </th:block>
+        <div class="form-text">※100文字以内</div>
+      </div>
+      <div class="col-4">
+        <label for="clientName" class="form-label">顧客名</label> <input type="text" th:field="*{clientName}" class="form-control">
+        <th:block th:with="fieldName='clientName'">
+          <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{clientName}" class="text-danger"></div>
+        </th:block>
+        <div class="form-text">※100文字以内</div>
+      </div>
+      <div class="col-4">
+        <label for="createdBy" class="form-label">担当者</label> <select class="form-select" th:field="*{createdBy}">
+          <option value=""></option>
+          <option th:each="account : ${fullnameList}" th:value="${account.id}" th:text="${account.fullname}" th:selected="${account.id} == ${selectedAccountId}"></option>
+        </select>
+        <th:block th:with="fieldName='createdBy'">
+          <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{createdBy}" class="text-danger"></div>
+        </th:block>
+      </div>
 
-            <div class="row align-items-end mb-3">
-                <!-- 内訳追加ボタン -->
-                <div class="col-2 d-flex flex-column justify-content-end">
-                    <button type="button" class="btn btn-secondary" onclick="addItem()">内訳を追加</button>
-                </div>
-            </div>
-            <!-- 内訳テーブル -->
-            <div class="col-8">
-                <h4 class="mt-4">内訳</h4>
-                <div class="table-responsive mb-3">
-                    <table class="table table-bordered" id="items">
-                        <thead class="table-light">
-                            <tr>
-                                <th>資材・作業名</th>
-                                <th>単価</th>
-                                <th>数量</th>
-                                <th>単位</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="item, stat : *{items}">
-                                <td>
-                                    <input type="text" th:field="*{items[__${stat.index}__].itemName}"
-                                        class="form-control" placeholder="資材・作業名">
-                                    <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
-                                        <div th:if="${#fields.hasErrors(fieldName)}"
-                                            th:errors="*{items[__${stat.index}__].itemName}" class="text-danger">
-                                        </div>
-                                    </th:block>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}"
-                                        class="form-control" placeholder="単価">
-                                    <th:block th:with="fieldName=${'items[' + stat.index + '].unitPrice'}">
-                                        <div th:if="${#fields.hasErrors(fieldName)}"
-                                            th:errors="*{items[__${stat.index}__].unitPrice}" class="text-danger">
-                                        </div>
-                                    </th:block>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" th:field="*{items[__${stat.index}__].quantity}"
-                                        class="form-control" placeholder="数量">
-                                    <th:block th:with="fieldName=${'items[' + stat.index + '].quantity'}">
-                                        <div th:if="${#fields.hasErrors(fieldName)}"
-                                            th:errors="*{items[__${stat.index}__].quantity}" class="text-danger">
-                                        </div>
-                                    </th:block>
-                                </td>
-                                <td>
-                                    <input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"
-                                        placeholder="単位">
-                                    <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
-                                        <div th:if="${#fields.hasErrors(fieldName)}"
-                                            th:errors="*{items[__${stat.index}__].unit}" class="text-danger">
-                                        </div>
-                                    </th:block>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm" style="white-space: nowrap;"
-                                        th:onclick="'removeItem(this)'">削除</button>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(estimateForm.items)}">
-                                <td colspan="5" class="text-center">内訳項目がありません</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-2 d-flex flex-column gap-2">
-                <div class="mt-auto">
-                    <div>
-                        <label class="form-label">合計金額（税抜）</label>
-                        <input type="text" id="totalAmount" class="form-control" readonly>
-                    </div>
-                    <div>
-                        <label class="form-label">消費税</label>
-                        <input type="text" id="taxAmount" class="form-control" readonly>
-                    </div>
-                    <div>
-                        <label class="form-label">合計金額（税込）</label>
-                        <input type="text" id="grandTotal" class="form-control" readonly>
-                    </div>
-                </div>
-            </div>
-    </div>
-
-    <div class=" row">
-        <div class="col-4">
-            <!-- 全体のエラー表示-->
-            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-                <div th:each="error : ${#fields.errors('*')}" th:text="${error}"></div>
-            </div>
+      <div class="row align-items-end mb-3">
+        <!-- 内訳追加ボタン -->
+        <div class="col-2 d-flex flex-column justify-content-end">
+          <button type="button" class="btn btn-secondary" onclick="addItem()">内訳を追加</button>
         </div>
-        <div class="col-4">
-            <!-- 登録ボタン -->
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">登録</button>
-                <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
-            </div>
+      </div>
+      <!-- 内訳テーブル -->
+      <div class="col-8">
+        <h4 class="mt-4">内訳</h4>
+        <div class="table-responsive mb-3">
+          <table class="table table-bordered" id="items">
+            <thead class="table-light">
+              <tr>
+                <th>資材・作業名</th>
+                <th>単価</th>
+                <th>数量</th>
+                <th>単位</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="item, stat : *{items}">
+                <td><input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control" placeholder="資材・作業名"> <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
+                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].itemName}" class="text-danger"></div>
+                  </th:block></td>
+                <td><input type="number" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control" placeholder="単価"> <th:block th:with="fieldName=${'items[' + stat.index + '].unitPrice'}">
+                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unitPrice}" class="text-danger"></div>
+                  </th:block></td>
+                <td><input type="number" step="0.01" th:field="*{items[__${stat.index}__].quantity}" class="form-control" placeholder="数量"> <th:block th:with="fieldName=${'items[' + stat.index + '].quantity'}">
+                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].quantity}" class="text-danger"></div>
+                  </th:block></td>
+                <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control" placeholder="単位"> <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
+                    <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unit}" class="text-danger"></div>
+                  </th:block></td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-sm" style="white-space: nowrap;" th:onclick="'removeItem(this)'">削除</button>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(estimateForm.items)}">
+                <td colspan="5" class="text-center">内訳項目がありません</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </div>
-    </form>
+      </div>
+      <div class="col-2 d-flex flex-column gap-2">
+        <div class="mt-auto">
+          <div>
+            <label class="form-label">合計金額（税抜）</label> <input type="text" id="totalAmount" class="form-control" readonly>
+          </div>
+          <div>
+            <label class="form-label">消費税</label> <input type="text" id="taxAmount" class="form-control" readonly>
+          </div>
+          <div>
+            <label class="form-label">合計金額（税込）</label> <input type="text" id="grandTotal" class="form-control" readonly>
+          </div>
+        </div>
+      </div>
 
-    <!-- 内訳項目のテンプレート-->
-    <template id="itemRowTemplate">
-        <tr>
-            <td><input type="text" name="items[__index__].itemName" class="form-control"></td>
-            <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control">
-            </td>
-            <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control">
-            </td>
-            <td><input type="text" name="items[__index__].unit" class="form-control"></td>
-            <td>
-                <button type="button" class="btn btn-danger btn-sm" style="white-space: nowrap;"
-                    onclick="removeItem(this)">削除</button>
-            </td>
-        </tr>
-    </template>
+  <div class=" row">
+    <div class="col-4">
+      <!-- 全体のエラー表示-->
+      <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+        <div th:each="error : ${#fields.errors('*')}" th:text="${error}"></div>
+      </div>
     </div>
+    <div class="col-4">
+      <!-- 登録ボタン -->
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary">登録</button>
+        <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
+      </div>
+    </div>
+  </div>
+  </form>
 
-    <div layout:fragment="script">
-        <script>
+  <!-- 内訳項目のテンプレート-->
+  <template id="itemRowTemplate">
+    <tr>
+      <td><input type="text" name="items[__index__].itemName" class="form-control"></td>
+      <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control"></td>
+      <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control"></td>
+      <td><input type="text" name="items[__index__].unit" class="form-control"></td>
+      <td>
+        <button type="button" class="btn btn-danger btn-sm" style="white-space: nowrap;" onclick="removeItem(this)">削除</button>
+      </td>
+    </tr>
+  </template>
+  </div>
+
+  <div layout:fragment="script">
+    <script>
             function addItem() {
                 const tbody = document.querySelector("#items tbody");
                 const index = tbody.children.length;
@@ -208,7 +170,7 @@
             });
 
         </script>
-    </div>
+  </div>
 
 </body>
 

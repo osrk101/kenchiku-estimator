@@ -1,70 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/commonLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
 <head>
-    <title>削除確認</title>
+<title>削除確認</title>
 </head>
 
 <body>
-    <div layout:fragment="content">
-        <h1 class="mb-4">削除確認</h1>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title" th:text="${estimate.title}">件名</h5>
-                <div class="row mb-2">
-                    <label class="col-sm-2 col-form-label">見積番号</label>
-                    <div class="col-sm-4">
-                        <p class="form-control-plaintext" th:text="${estimate.estimateNumber}"></p>
-                    </div>
-                    <label class="col-sm-2 col-form-label">作成者</label>
-                    <div class="col-sm-4">
-                        <p class="form-control-plaintext" th:text="${estimate.fullname}"></p>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <label class="col-sm-2 col-form-label">作成日</label>
-                    <div class="col-sm-4">
-                        <p class="form-control-plaintext"
-                            th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
-                    </div>
-                </div>
-            </div>
+  <div layout:fragment="content">
+    <h1 class="mb-4">削除確認</h1>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${estimate.title}">件名</h5>
+        <div class="row mb-2">
+          <label class="col-sm-2 col-form-label">見積番号</label>
+          <div class="col-sm-4">
+            <p class="form-control-plaintext" th:text="${estimate.estimateNumber}"></p>
+          </div>
+          <label class="col-sm-2 col-form-label">作成者</label>
+          <div class="col-sm-4">
+            <p class="form-control-plaintext" th:text="${estimate.fullname}"></p>
+          </div>
         </div>
-
-        <h4>見積内訳</h4>
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>項目名</th>
-                    <th>単価</th>
-                    <th>数量</th>
-                    <th>単位</th>
-                    <th>金額</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${estimateItems}">
-                    <td th:text="${item.itemName}"></td>
-                    <td th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
-                    <td th:text="${item.quantity}"></td>
-                    <td th:text="${item.unit}"></td>
-                    <td th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(estimateItems)}">
-                    <td colspan="5" class="text-center">内訳がありません</td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- 削除確認のメッセージ-->
-        <div class="alert alert-warning" role="alert">
-            <strong>注意:</strong> この見積書を削除しますか？
+        <div class="row mb-2">
+          <label class="col-sm-2 col-form-label">作成日</label>
+          <div class="col-sm-4">
+            <p class="form-control-plaintext" th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
+          </div>
         </div>
-        <form th:action="@{|/estimates/delete/${estimate.id}|}" method="post">
-            <button type="submit" class="btn btn-danger">削除</button>
-            <a th:href="@{/estimates}" class="btn btn-secondary">キャンセル</a>
-        </form>
+      </div>
     </div>
+
+    <h4>見積内訳</h4>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>項目名</th>
+          <th>単価</th>
+          <th>数量</th>
+          <th>単位</th>
+          <th>金額</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${estimateItems}">
+          <td th:text="${item.itemName}"></td>
+          <td th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
+          <td th:text="${item.quantity}"></td>
+          <td th:text="${item.unit}"></td>
+          <td th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(estimateItems)}">
+          <td colspan="5" class="text-center">内訳がありません</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 削除確認のメッセージ-->
+    <div class="alert alert-warning" role="alert">
+      <strong>注意:</strong> この見積書を削除しますか？
+    </div>
+    <form th:action="@{|/estimates/delete/${estimate.id}|}" method="post">
+      <button type="submit" class="btn btn-danger">削除</button>
+      <a th:href="@{/estimates}" class="btn btn-secondary">キャンセル</a>
+    </form>
+  </div>
 </body>
 
 </html>

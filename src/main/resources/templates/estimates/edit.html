@@ -1,132 +1,103 @@
 <!-- templates/estimates/edit.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/commonLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>見積書編集</title>
+<meta charset="UTF-8">
+<title>見積書編集</title>
 </head>
 
 <body>
-    <div layout:fragment="content">
-        <h1 class="mb-4">見積書 編集</h1>
-        <form class="mb-3 row g-2" th:action="@{/estimates/edit/{id}(id=${estimateForm.id})}" method="post"
-            th:object="${estimateForm}">
-            <input type="hidden" th:field="*{id}" />
-            <input type="hidden" th:field="*{estimateNumber}" />
-            <div class="col-4">
-                <label for="title" class="form-label">件名</label>
-                <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100" required>
-                <div class="form-text">※100文字以内</div>
-            </div>
-            <div class="col-4">
-                <label for="clientName" class="form-label">顧客名</label>
-                <input type="text" th:field="*{clientName}" class="form-control" id="clientName" maxlength="100"
-                    required>
-                <div class="form-text">※100文字以内</div>
-            </div>
-            <div class="col-4">
-                <label for="createdBy" class="form-label">担当者</label>
-                <select class="form-select" id="createdBy" name="createdBy" th:field="*{createdBy}" required>
-                    <option th:each="account : ${fullnameList}" th:value="${account.id}" th:text="${account.fullname}"
-                        th:selected="${account.id} == ${selectedAccountId}">
-                    </option>
-                </select>
-            </div>
+  <div layout:fragment="content">
+    <h1 class="mb-4">見積書 編集</h1>
+    <form class="mb-3 row g-2" th:action="@{/estimates/edit/{id}(id=${estimateForm.id})}" method="post" th:object="${estimateForm}">
+      <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+        <ul>
+          <li th:each="error : ${#fields.errors()}" th:text="${error}"></li>
+        </ul>
+      </div>
+      <div th:if="${message != null and !#strings.isEmpty(message)}" th:class="'alert ' + (${messageType} == 'error' ? 'alert-danger' : 'alert-success')" th:text="${message}"></div>
+      <input type="hidden" th:field="*{id}" /> <input type="hidden" th:field="*{estimateNumber}" />
+      <div class="col-4">
+        <label for="title" class="form-label">件名</label> <input type="text" th:field="*{title}" class="form-control" id="title" maxlength="100" required>
+        <div class="form-text">※100文字以内</div>
+      </div>
+      <div class="col-4">
+        <label for="clientName" class="form-label">顧客名</label> <input type="text" th:field="*{clientName}" class="form-control" id="clientName" maxlength="100" required>
+        <div class="form-text">※100文字以内</div>
+      </div>
+      <div class="col-4">
+        <label for="createdBy" class="form-label">担当者</label> <select class="form-select" id="createdBy" name="createdBy" th:field="*{createdBy}" required>
+          <option th:each="account : ${fullnameList}" th:value="${account.id}" th:text="${account.fullname}" th:selected="${account.id} == ${selectedAccountId}"></option>
+        </select>
+      </div>
 
-            <!-- 内訳テーブル -->
-            <h4 class="mt-4">内訳</h4>
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered" id="items">
-                    <thead class="table-light">
-                        <tr>
-                            <th>資材・作業名</th>
-                            <th>単価</th>
-                            <th>数量</th>
-                            <th>単位</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="item, stat : *{items}">
-                            <input type="hidden" th:field="*{items[__${stat.index}__].id}" />
-                            <input type="hidden" th:field="*{items[__${stat.index}__].estimateId}" />
-                            <td>
-                                <input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control"
-                                    placeholder="資材・作業名" maxlength="100" required>
-                            </td>
-                            <td>
-                                <input type="number" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}"
-                                    class="form-control" placeholder="単価" min="0" required>
-                            </td>
-                            <td>
-                                <input type="number" step="0.01" th:field="*{items[__${stat.index}__].quantity}"
-                                    class="form-control" placeholder="数量" min="0" required>
-                            </td>
-                            <td>
-                                <input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"
-                                    placeholder="単位" maxlength="20" required>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger"
-                                    th:onclick="'removeItem(' + ${stat.index} + ')'">削除</button>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(estimateForm.items)}">
-                            <td colspan="5" class="text-center">内訳項目がありません</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 項目追加ボタン -->
-            <div class="mb-3">
-                <button type="button" class="btn btn-secondary" onclick="addItem()">＋項目追加</button>
-            </div>
-
-            <!-- 合計金額 -->
-            <div class="mb-3">
-                <label class="form-label">合計金額（税抜）</label>
-                <input type="text" id="totalAmount" class="form-control" readonly>
-            </div>
-
-            <!-- 登録ボタン -->
-            <div class="mb-3">
-                <button type="submit" name="action" value="update" class="btn btn-primary">更新</button>
-                <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
-                <button type="submit" name="action" value="saveAsNew" class="btn-secondary">別件で保存</button>
-            </div>
-            <!-- エラーメッセージ -->
-            <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
-                <ul>
-                    <li th:each="error : ${#fields.errors()}" th:text="${error}"></li>
-                </ul>
-            </div>
-            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-                <ul>
-                    <li th:each="error : ${#fields.globalErrors()}" th:text="${error}"></li>
-                </ul>
-            </div>
-
-        </form>
-        <!-- 内訳項目のテンプレート-->
-        <template id="itemRowTemplate">
+      <!-- 内訳テーブル -->
+      <h4 class="mt-4">内訳</h4>
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered" id="items">
+          <thead class="table-light">
             <tr>
-                <td><input type="text" name="items[__index__].itemName" class="form-control" required></td>
-                <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control" required>
-                </td>
-                <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control" required>
-                </td>
-                <td><input type="text" name="items[__index__].unit" class="form-control" required></td>
-                <td><button type="button" class="btn btn-danger" onclick="removeItem(this)">削除</button></td>
+              <th>資材・作業名</th>
+              <th>単価</th>
+              <th>数量</th>
+              <th>単位</th>
+              <th>操作</th>
             </tr>
-        </template>
+          </thead>
+          <tbody>
+            <tr th:each="item, stat : *{items}">
+              <input type="hidden" th:field="*{items[__${stat.index}__].id}" />
+              <input type="hidden" th:field="*{items[__${stat.index}__].estimateId}" />
+              <td><input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control" placeholder="資材・作業名" maxlength="100" required></td>
+              <td><input type="number" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control" placeholder="単価" min="0" required></td>
+              <td><input type="number" step="0.01" th:field="*{items[__${stat.index}__].quantity}" class="form-control" placeholder="数量" min="0" required></td>
+              <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control" placeholder="単位" maxlength="20" required></td>
+              <td>
+                <button type="button" class="btn btn-danger" th:onclick="'removeItem(' + ${stat.index} + ')'">削除</button>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(estimateForm.items)}">
+              <td colspan="5" class="text-center">内訳項目がありません</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    </div>
+      <!-- 項目追加ボタン -->
+      <div class="mb-3">
+        <button type="button" class="btn btn-secondary" onclick="addItem()">＋項目追加</button>
+      </div>
 
-    <div layout:fragment="script">
-        <script>
+      <!-- 合計金額 -->
+      <div class="mb-3">
+        <label class="form-label">合計金額（税抜）</label> <input type="text" id="totalAmount" class="form-control" readonly>
+      </div>
+
+      <!-- 登録ボタン -->
+      <div class="mb-3">
+        <button type="submit" name="action" value="update" class="btn btn-primary">更新</button>
+        <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
+        <button type="submit" name="action" value="saveAsNew" class="btn-secondary">別件で保存</button>
+      </div>
+
+
+    </form>
+    <!-- 内訳項目のテンプレート-->
+    <template id="itemRowTemplate">
+      <tr>
+        <td><input type="text" name="items[__index__].itemName" class="form-control" required></td>
+        <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control" required></td>
+        <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control" required></td>
+        <td><input type="text" name="items[__index__].unit" class="form-control" required></td>
+        <td><button type="button" class="btn btn-danger" onclick="removeItem(this)">削除</button></td>
+      </tr>
+    </template>
+
+  </div>
+
+  <div layout:fragment="script">
+    <script>
             function addItem() {
                 const tbody = document.querySelector("#items tbody");
                 const index = tbody.children.length;
@@ -164,7 +135,7 @@
                 calculateTotal(); // 初期計算
             });
         </script>
-    </div>
+  </div>
 
 
 </body>

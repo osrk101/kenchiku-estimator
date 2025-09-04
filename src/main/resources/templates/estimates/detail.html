@@ -1,95 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/commonLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
 <head>
-    <title>見積書詳細</title>
+<title>見積書詳細</title>
 </head>
 
 <body>
-    <div layout:fragment="content">
-        <h1 class="mb-4">見積書詳細</h1>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title" th:text="${estimate.title}">件名</h5>
+  <div layout:fragment="content">
+    <h1 class="mb-4">見積書詳細</h1>
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${estimate.title}">件名</h5>
 
-                <div class="row mb-2">
-                    <div class="col-md-6">
-                        <label class="form-label">見積番号</label>
-                        <p th:text="${estimate.estimateNumber}"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">顧客名</label>
-                        <p th:text="${estimate.clientName}"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">担当者</label>
-                        <p class="form-control-plaintext" th:text="${estimate.fullname}"></p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">作成日</label>
-                        <p class="form-control-plaintext"
-                            th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-4 text-center">
-                        <label class="form-label">合計金額（税抜）</label>
-                        <p class="form-control-plaintext fw-bold fs-5"
-                            th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + ' 円'"></p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <label class=" form-label">税額</label>
-                        <p class="form-control-plaintext fw-bold fs-5 text-danger"
-                            th:text="${#numbers.formatInteger(totalAmount * 0.1, 0, 'COMMA')} + ' 円'"></p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <label class="form-label">合計金額（税込）</label>
-                        <p class="form-control-plaintext fw-bold fs-5 text-danger"
-                            th:text="${#numbers.formatInteger(totalAmount * 1.1, 0, 'COMMA')} + ' 円'"></p>
-                    </div>
-                </div>
-            </div>
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <label class="form-label">見積番号</label>
+            <p th:text="${estimate.estimateNumber}"></p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">顧客名</label>
+            <p th:text="${estimate.clientName}"></p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">担当者</label>
+            <p class="form-control-plaintext" th:text="${estimate.fullname}"></p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">作成日</label>
+            <p class="form-control-plaintext" th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
+          </div>
         </div>
-
-
-        <h4>見積内訳</h4>
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>項目名</th>
-                    <th class="text-end">単価</th>
-                    <th class="text-end">数量</th>
-                    <th class="text-center">単位</th>
-                    <th class="text-end">金額（税抜）</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${estimateItems}">
-                    <td th:text="${item.itemName}"></td>
-                    <td class="text-end" th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
-                    <td class="text-end" th:text="${item.quantity}"></td>
-                    <td class="text-center" th:text="${item.unit}"></td>
-                    <td class="text-end fw-bold"
-                        th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(estimateItems)}">
-                    <td colspan="5" class="text-center">内訳がありません</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="row mb-3">
-            <div class="col-md-4 text-end">
-                <a th:href="@{/estimates}" class="btn btn-secondary">一覧に戻る</a>
-            </div>
-            <div class="col-md-4 text-center">
-                <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-primary">編集</a>
-            </div>
-            <div class="col-md-4 text-start">
-                <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" class="btn btn-danger">削除</a>
-            </div>
+        <div class="row mb-2">
+          <div class="col-md-4 text-center">
+            <label class="form-label">合計金額（税抜）</label>
+            <p class="form-control-plaintext fw-bold fs-5" th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + ' 円'"></p>
+          </div>
+          <div class="col-md-4 text-center">
+            <label class=" form-label">税額</label>
+            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(totalAmount * 0.1, 0, 'COMMA')} + ' 円'"></p>
+          </div>
+          <div class="col-md-4 text-center">
+            <label class="form-label">合計金額（税込）</label>
+            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(totalAmount * 1.1, 0, 'COMMA')} + ' 円'"></p>
+          </div>
         </div>
+      </div>
     </div>
+
+
+    <h4>見積内訳</h4>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>項目名</th>
+          <th class="text-end">単価</th>
+          <th class="text-end">数量</th>
+          <th class="text-center">単位</th>
+          <th class="text-end">金額（税抜）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${estimateItems}">
+          <td th:text="${item.itemName}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
+          <td class="text-end" th:text="${item.quantity}"></td>
+          <td class="text-center" th:text="${item.unit}"></td>
+          <td class="text-end fw-bold" th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(estimateItems)}">
+          <td colspan="5" class="text-center">内訳がありません</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row mb-3">
+      <div class="col-md-4 text-end">
+        <a th:href="@{/estimates}" class="btn btn-secondary">一覧に戻る</a>
+      </div>
+      <div class="col-md-4 text-center">
+        <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-primary">編集</a>
+      </div>
+      <div class="col-md-4 text-start">
+        <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" class="btn btn-danger">削除</a>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
