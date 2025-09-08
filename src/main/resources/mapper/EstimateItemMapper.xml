@@ -6,7 +6,7 @@
 <mapper namespace="com.kenchiku_estimator.repository.EstimateItemMapper">
 
     <!-- 見積書アイテムを新規作成 -->
-    <insert id = "createEstimateItem" parameterType="com.kenchiku_estimator.form.EstimateItemForm">
+    <insert id = "createEstimateItem" parameterType="com.kenchiku_estimator.model.MEstimateItem">
         INSERT INTO estimate_items (estimate_id, item_name, unit_price, quantity, unit)
         VALUES (#{estimateId}, #{itemName}, #{unitPrice}, #{quantity}, #{unit})
     </insert>

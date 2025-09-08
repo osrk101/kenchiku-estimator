@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("spring.todoList.repository")
+@MapperScan("com.kenchiku_estimator.repository")
 public class JavaConfig {
-    @Bean
-    ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        modelMapper.getConfiguration().setFullTypeMatchingRequired(true);
-        return modelMapper;
-    }
+  @Bean
+  ModelMapper modelMapper() {
+    ModelMapper modelMapper = new ModelMapper();
+    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    modelMapper.getConfiguration().setFullTypeMatchingRequired(true);
+    return modelMapper;
+  }
 }

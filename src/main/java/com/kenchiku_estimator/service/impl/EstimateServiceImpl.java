@@ -12,6 +12,7 @@ import com.kenchiku_estimator.form.EstimateItemForm;
 import com.kenchiku_estimator.model.MEstimate;
 import com.kenchiku_estimator.model.MEstimateItem;
 import com.kenchiku_estimator.repository.EstimateMapper;
+import com.kenchiku_estimator.service.EstimateItemService;
 import com.kenchiku_estimator.service.EstimateService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +24,7 @@ public class EstimateServiceImpl implements EstimateService {
   EstimateMapper estimateMapper;
 
   @Autowired
-  EstimateItemServiceImpl estimateItemService;
+  EstimateItemService estimateItemService;
 
   @Autowired
   ModelMapper modelMapper;

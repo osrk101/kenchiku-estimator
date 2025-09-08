@@ -1,8 +1,10 @@
 package com.kenchiku_estimator.repository;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
 import com.kenchiku_estimator.model.MAccount;
 
+@Mapper
 public interface AccountMapper {
 
   // 全件取得
