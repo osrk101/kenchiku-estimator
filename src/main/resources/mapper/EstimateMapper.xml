@@ -21,7 +21,6 @@
         LEFT JOIN accounts a ON e.created_by = a.id
         ORDER BY e.created_at DESC
     </select>
-
     <!-- 検索ワードに該当する見積書を取得 -->
     <select id="findBySearchWords" parameterType="String" resultType="com.kenchiku_estimator.model.MEstimate">
         SELECT  e.id,
@@ -39,8 +38,7 @@
            OR e.id = #{searchWords}
         ORDER BY e.created_at DESC
     </select>
-
-
+    <!-- IDで見積書を取得 -->
     <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MEstimate">
         SELECT  e.id,
                 e.estimate_number,
@@ -53,26 +51,26 @@
         LEFT JOIN accounts a ON e.created_by = a.id
         WHERE e.id = #{id}
     </select>
-
-    <insert id="createNewEstimate" parameterType="com.kenchiku_estimator.model.MEstimate" useGeneratedKeys="true" keyProperty="id">
+    <!-- 新規登録 -->
+    <insert id="insert" parameterType="com.kenchiku_estimator.model.MEstimate" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO estimates 
         (estimate_number, title, client_name,created_by, created_at)
         VALUES 
         (#{estimateNumber}, #{title}, #{clientName}, #{createdBy}, CURRENT_DATE)
     </insert>
-
-    <update id="updateEstimate" parameterType="com.kenchiku_estimator.model.MEstimate">
+    <!-- 更新 -->
+    <update id="update" parameterType="com.kenchiku_estimator.model.MEstimate">
         UPDATE estimates
         SET title = #{title}, created_by = #{createdBy}, created_at = CURRENT_DATE
         WHERE id = #{id}
     </update>
-
-    <delete id="deleteEstimate" parameterType="int">
+    <!-- 削除 --> 
+    <delete id="delete" parameterType="int">
         DELETE 
         FROM estimates 
         WHERE id = #{id}
     </delete>
-
+    <!-- 見積番号の接頭辞で件数をカウント -->
     <select id="countByEstimateNumberPrefix" resultType="int" parameterType="String">
         SELECT COUNT(*) 
         FROM estimates 

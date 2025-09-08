@@ -14,16 +14,19 @@ public interface AccountMapper {
   // usernameでアカウントを取得
   MAccount findByUsername(String username);
 
-  // 登録
+  // IDでアカウントを1件取得
+  MAccount findById(int id);
+
+  // 新規アカウントの登録
   void insert(MAccount account);
 
-  // 更新
-  void update(MAccount account);
+  // アカウントの更新
 
-  // 削除
-  void delete(int id);
+  int update(MAccount account);
 
-  // IDで1件取得
-  MAccount findById(int id);
+  // アカウントの削除
+
+  int delete(int id);
+
 
 }

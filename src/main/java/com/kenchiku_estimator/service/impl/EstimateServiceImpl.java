@@ -35,7 +35,6 @@ public class EstimateServiceImpl implements EstimateService {
     try {
       return estimateMapper.findAll();
     } catch (DataAccessException e) {
-      log.error("全見積書の取得に失敗しました。データベースエラー = {}", e.getMessage());
       throw e;
     }
   }
@@ -47,7 +46,6 @@ public class EstimateServiceImpl implements EstimateService {
     try {
       return estimateMapper.findBySearchWords(searchWords);
     } catch (DataAccessException e) {
-      log.error("検索ワードによる見積書の取得に失敗しました。データベースエラー = {}", e.getMessage());
       throw e;
     }
   }
@@ -67,7 +65,6 @@ public class EstimateServiceImpl implements EstimateService {
       }
       return estimate;
     } catch (DataAccessException e) {
-      log.error("見積書の取得に失敗しました。ID = {} データベースエラー:  = {}", estimateId, e.getMessage(), e);
       throw e;
     }
 
@@ -84,7 +81,6 @@ public class EstimateServiceImpl implements EstimateService {
       log.info("Service 見積書番号の生成に成功しました)" + today + "-" + String.format("%02d", sequence));
       return today + "-" + String.format("%02d", sequence);
     } catch (DataAccessException e) {
-      log.error("見積書番号の生成に失敗しました: データベースエラー = {}", e.getMessage());
       throw e;
     }
   }
@@ -94,9 +90,8 @@ public class EstimateServiceImpl implements EstimateService {
   public void createNewEstimate(MEstimate estimate) {
     log.info("Service 新規見積書の登録処理を実行します: {}", estimate);
     try {
-      estimateMapper.createNewEstimate(estimate);
+      estimateMapper.insert(estimate);
     } catch (DataAccessException e) {
-      log.error("新規見積書の登録に失敗しました: データベースエラー = {}", e.getMessage());
       throw e;
     }
     log.info("Service 新規見積書の登録に成功しました: {}", estimate);
@@ -109,9 +104,8 @@ public class EstimateServiceImpl implements EstimateService {
   public boolean updateEstimate(MEstimate estimate) {
     log.info("Service 見積書の更新処理を実行します: {}", estimate);
     try {
-      estimateMapper.updateEstimate(estimate);
+      estimateMapper.update(estimate);
     } catch (DataAccessException e) {
-      log.error("見積書の更新に失敗しました: ID= {}データベースエラー = {}", estimate.getId(), e.getMessage());
       throw e;
     }
     log.info("Service 見積書の更新に成功しました: {}", estimate);
@@ -143,15 +137,21 @@ public class EstimateServiceImpl implements EstimateService {
 
   // 見積書の削除
   @Override
-  public void deleteEstimate(int id) {
+  public boolean deleteEstimate(int id) {
     log.info("Service 見積書を削除処理を実行します: ID = {}", id);
     try {
-      estimateMapper.deleteEstimate(id);
+      getEstimateOne(id); // 存在確認
+      Boolean isDelatedEstimateItem = estimateItemService.deleteEstimateItem(id); // アイテム削除
+      int isDelatedEstimate = estimateMapper.delete(id); // 見積書削除
+      if (!isDelatedEstimateItem || isDelatedEstimate == 0) {
+        log.error("Service 見積書または見積書アイテムの削除に失敗しました: ID = {}", id);
+        return false;
+      }
       log.info("Service 見積書の削除に成功しました: ID = {}", id);
     } catch (DataAccessException e) {
-      log.error("見積書の削除に失敗しました: ID = {}, データベースエラー = {}", id, e.getMessage());
       throw e;
     }
+    return true;
   }
 
 }

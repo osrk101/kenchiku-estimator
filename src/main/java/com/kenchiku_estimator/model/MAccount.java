@@ -5,13 +5,13 @@ import lombok.Data;
 @Data
 public class MAccount {
 
-    private int id;
+  private int id;
 
-    private String username;
+  private String username;
 
-    private String password;
+  private String password;
 
-    private String role;
+  private String role;
 
-    private String fullname;
+  private String fullName;
 }

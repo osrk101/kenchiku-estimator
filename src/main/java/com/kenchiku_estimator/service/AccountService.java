@@ -23,4 +23,6 @@ public interface AccountService {
   // アカウントの削除
   public boolean deleteAccount(int id);
 
+  String encodePassword(String password);
+
 }

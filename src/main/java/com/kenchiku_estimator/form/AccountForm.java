@@ -6,11 +6,18 @@ import lombok.Data;
 @Data
 public class AccountForm {
 
-	private int id;
+  private int id;
 
-	@NotBlank
-	private String userName;
+  @NotBlank
+  private String username;
 
-	@NotBlank
-	private String password;
+  @NotBlank
+  private String password;
+
+  @NotBlank
+  private String fullName;
+
+  @NotBlank
+  private String role;
 }
+

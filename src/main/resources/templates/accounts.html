@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
+
+<head>
+<title>アカウント一覧</title>
+</head>
+
+<body>
+  <div layout:fragment="content">
+
+    <!-- メッセージ表示 -->
+    <form th:action="@{/accounts}" method="get">
+      <div class="row g-2 align-items-center mb-4">
+        <div class="col">
+          <div th:if="${message != null and !#strings.isEmpty(message)}">
+            <div th:class="'alert ' + (${messageType} == 'error' ? 'alert-danger' : 'alert-success')" th:text="${message}"></div>
+          </div>
+        </div>
+
+        <!-- タイトル -->
+        <div class="col text-center">
+          <h1>アカウント一覧</h1>
+        </div>
+        <!-- 新規作成ボタン -->
+        <a class="btn btn-success" th:href="@{/accounts/create}" style="white-space: nowrap;">新規作成</a>
+      </div>
+    </form>
+
+    <!-- アカウント一覧テーブル -->
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>アカウント番号</th>
+          <th>アカウント名</th>
+          <th>権限</th>
+          <th>氏名</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="account : ${accountsList}">
+          <td th:text="${account.id}"></td>
+          <td th:text="${account.username}"></td>
+          <td th:text="${account.role}"></td>
+          <td th:text="${account.fullName}"></td>
+          <td>
+            <a th:href="@{|/accounts/edit/${account.id}|}" class="btn btn-outline-secondary btn-sm">編集</a> 
+            <a th:href="@{|/accounts/confirmDelete/${account.id}|}" class="btn btn-outline-danger btn-sm">削除</a>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(accountsList)}">
+          <td colspan="5" class="text-center">アカウントがありません</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+</html>

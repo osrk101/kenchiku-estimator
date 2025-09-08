@@ -2,19 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- Mapperとxmlのマッピング -->
-<mapper namespace="com.kenchiku_estimator.repository.AccountMapper">
+<mapper
+	namespace="com.kenchiku_estimator.repository.AccountMapper">
 
-    <!-- アカウント全取得-->
-    <select id="findAll" resultType="com.kenchiku_estimator.model.MAccount"> 
-        SELECT * FROM accounts </select>
-    <!-- アカウント氏名全取得-->
-    <select id="findAllFullname" resultType="com.kenchiku_estimator.model.MAccount"> 
-        SELECT id, full_name FROM accounts </select>
-    <!-- IDでアカウントを取得-->
-    <select id="findById" parameterType="int" resultType="com.kenchiku_estimator.model.MAccount">
-        SELECT * FROM accounts WHERE id = #{id} </select>
-    <!-- ユーザ名でアカウントを取得 -->
-    <select id="findByUsername" parameterType="string" resultType="com.kenchiku_estimator.model.MAccount">
-    SELECT * FROM accounts WHERE username = #{username}
-    </select>
+	<!-- アカウント全取得 -->
+	<select id="findAll"
+		resultType="com.kenchiku_estimator.model.MAccount">
+		SELECT * FROM accounts
+	</select>
+	<!-- アカウント氏名全取得 -->
+	<select id="findAllFullname"
+		resultType="com.kenchiku_estimator.model.MAccount">
+		SELECT id, full_name FROM accounts
+	</select>
+	<!-- IDでアカウントを取得 -->
+	<select id="findById" parameterType="int"
+		resultType="com.kenchiku_estimator.model.MAccount">
+		SELECT * FROM accounts WHERE id = #{id}
+	</select>
+	<!-- ユーザ名でアカウントを取得 -->
+	<select id="findByUsername" parameterType="string"
+		resultType="com.kenchiku_estimator.model.MAccount">
+		SELECT * FROM accounts WHERE username = #{username}
+	</select>
+	<!-- 新規登録 -->
+	<insert id="insert"
+		parameterType="com.kenchiku_estimator.model.MAccount">
+		INSERT INTO accounts (username, password, full_name, role) VALUES
+		(#{username}, #{password}, #{fullName}, #{role})
+	</insert>
+	<!-- 更新 -->
+	<update id="update"
+		parameterType="com.kenchiku_estimator.model.MAccount">
+		UPDATE accounts
+		<set>
+			username = #{username},
+			full_name = #{fullName},
+			role = #{role},
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<!-- 削除 -->
+	<delete id="delete" parameterType="int">
+		DELETE FROM accounts WHERE id = #{id}
+	</delete>
+
 </mapper>

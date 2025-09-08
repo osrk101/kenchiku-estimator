@@ -29,7 +29,7 @@ public interface EstimateService {
   public void saveEstimateWithItems(MEstimate estimate, List<EstimateItemForm> items, boolean b);
 
   // 見積書の削除
-  public Boolean deleteEstimate(int id);
+  public boolean deleteEstimate(int id);
 
 
 

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.kenchiku_estimator.exception.DataBaseAccessException;
 import com.kenchiku_estimator.model.MEstimateItem;
 import com.kenchiku_estimator.repository.EstimateItemMapper;
 import com.kenchiku_estimator.service.EstimateItemService;
@@ -36,8 +35,7 @@ public class EstimateItemServiceImpl implements EstimateItemService {
       }
       return itemList;
     } catch (DataAccessException e) {
-      log.error("データベースエラー: ID = {}, エラー = {}", id, e.getMessage());
-      throw new DataBaseAccessException("見積書アイテムの取得に失敗しました", e);
+      throw e;
     }
 
   }
@@ -50,8 +48,7 @@ public class EstimateItemServiceImpl implements EstimateItemService {
       estimateItemMapper.createEstimateItem(item);
       log.info("見積書アイテムの新規作成に成功しました:{}", item);
     } catch (DataAccessException e) {
-      log.error("見積書アイテムの新規作成に失敗しました: {}", e.getMessage());
-      throw new DataBaseAccessException("見積書アイテムの新規作成に失敗しました", e);
+      throw e;
     }
   }
 
@@ -66,8 +63,7 @@ public class EstimateItemServiceImpl implements EstimateItemService {
       }
       log.info("見積書アイテムの更新に成功しました: {}", item);
     } catch (DataAccessException e) {
-      log.error("見積書アイテムの更新に失敗しました データベースエラー = {}", e.getMessage());
-      throw new DataBaseAccessException("見積書アイテムの更新に失敗しました", e);
+      throw e;
     }
     return true;
   }
@@ -83,8 +79,7 @@ public class EstimateItemServiceImpl implements EstimateItemService {
       }
       log.info("見積書アイテムの削除に成功しました: ID = {}", id);
     } catch (DataAccessException e) {
-      log.error("見積書アイテムの削除に失敗しました: ID = {} データベースエラー = {}", id, e.getMessage());
-      throw new DataBaseAccessException("見積書アイテムの削除に失敗しました", e);
+      throw e;
     }
     return true;
   }
