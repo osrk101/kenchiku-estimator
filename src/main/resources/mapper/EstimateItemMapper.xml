@@ -6,10 +6,10 @@
 <mapper namespace="com.kenchiku_estimator.repository.EstimateItemMapper">
 
     <!-- 見積書アイテムを新規作成 -->
-    <select id = "createEstimateItem" parameterType="com.kenchiku_estimator.form.EstimateItemForm" resultType="com.kenchiku_estimator.model.MEstimateItem">
+    <insert id = "createEstimateItem" parameterType="com.kenchiku_estimator.form.EstimateItemForm">
         INSERT INTO estimate_items (estimate_id, item_name, unit_price, quantity, unit)
         VALUES (#{estimateId}, #{itemName}, #{unitPrice}, #{quantity}, #{unit})
-    </select>
+    </insert>
 
     <!-- 該当の見積書アイテムを取得する -->
     <select id="findByEstimateId" resultType="com.kenchiku_estimator.model.MEstimateItem">

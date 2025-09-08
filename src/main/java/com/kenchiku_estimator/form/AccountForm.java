@@ -11,7 +11,6 @@ public class AccountForm {
   @NotBlank
   private String username;
 
-  @NotBlank
   private String password;
 
   @NotBlank
