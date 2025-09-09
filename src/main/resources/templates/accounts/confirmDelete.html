@@ -1,0 +1,45 @@
+<!-- templates/accounts/confirmDelete.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
+<head>
+<meta charset="UTF-8" />
+<title>アカウント削除確認</title>
+</head>
+<body>
+  <div layout:fragment="content">
+
+    <!-- ページタイトル（中央） -->
+    <h1 class="mb-4 text-center">削除確認</h1>
+
+    <!-- アカウント情報（中央寄せのカード + テーブル） -->
+    <div class="card mb-4 shadow-sm w-50 mx-auto">
+      <div class="card-body">
+        <h5 class="card-title text-center mb-4" th:text="${account.username}">アカウント名</h5>
+
+        <table class="table table-bordered mb-0">
+          <tbody>
+            <tr>
+              <th class="w-50 bg-light">権限</th>
+              <td th:text="${account.role}">ROLE_USER</td>
+            </tr>
+            <tr>
+              <th class="bg-light">氏名</th>
+              <td th:text="${account.fullName}">山田 太郎</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 警告（中央・赤字） -->
+    <p class="text-center fs-5 text-danger fw-bold mb-3">本当に削除しますか？</p>
+
+    <!-- ボタン（中央・横並び） -->
+    <form th:action="@{|/accounts/delete/${account.id}|}" method="post" class="d-flex justify-content-center gap-3 mt-3">
+      <a th:href="@{/accounts}" class="btn btn-secondary px-4">戻る</a>
+      <button type="submit" class="btn btn-danger px-4">削除</button>
+    </form>
+
+  </div>
+</body>
+</html>

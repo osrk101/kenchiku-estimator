@@ -30,5 +30,8 @@ public interface EstimateMapper {
   // 見積書の削除
   int delete(int id);
 
+  // 担当している見積書の数を取得
+  int countByCreatedBy(int accountId);
+
 
 }

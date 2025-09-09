@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/simpleLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/simpleLayout}">
 
 
 <head>
-	<title th:text="#{error}"></title>
+<title th:text="#{error}"></title>
 </head>
 
 <body>
-	<div layout:fragment="content">
-		<div class="container text-center">
-			<h1 th:text="${status} + ' ' + ${error}"></h1>
-			<p>エラーが発生しました</p>
-			<p th:text="${message}"></p>
-			<form th:action="@{/logout}" method="post">
-				<button class="btn btn-warning btn-sm" th:text="#{logout}"></button>
-			</form>
-		</div>
-	</div>
+  <div layout:fragment="content">
+    <div class="container text-center">
+      <h1 th:text="${status} + ' ' + ${error}"></h1>
+      <p>エラーが発生しました</p>
+      <p th:text="${message}"></p>
+      <form th:action="@{/logout}" method="post">
+        <button class="btn btn-warning btn-sm" th:text="#{logout}"></button>
+      </form>
+      <!--  前のページに戻る -->
+      <button class="btn btn-secondary btn-sm mt-2" onclick="history.back()" th:text="#{back}"></button>
+    </div>
+  </div>
 
 </body>
 

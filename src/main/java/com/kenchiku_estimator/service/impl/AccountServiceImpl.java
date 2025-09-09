@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.kenchiku_estimator.model.MAccount;
 import com.kenchiku_estimator.repository.AccountMapper;
+import com.kenchiku_estimator.repository.EstimateMapper;
 import com.kenchiku_estimator.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AccountServiceImpl implements AccountService {
   @Autowired
   private AccountMapper accountMapper;
+
+  @Autowired
+  private EstimateMapper estimateMapper;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
@@ -101,6 +105,10 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public boolean deleteAccount(int id) {
     log.info("Service アカウントの削除を行います");
+    int estimateCount = estimateMapper.countByCreatedBy(id);
+    if (estimateCount > 0) {
+      return false;
+    }
     try {
       int rowNumber = accountMapper.delete(id);
       if (rowNumber > 0) {

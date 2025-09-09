@@ -123,9 +123,16 @@ public class AccountController {
   @PostMapping("/delete/{id}")
   public String postAccountDelete(@PathVariable int id, RedirectAttributes redirectAttributes) {
     log.info("controller アカウントの削除を実行します。");
-    accountService.deleteAccount(id);
+    boolean estimateCount = accountService.deleteAccount(id);
+    if (!estimateCount) {
+      log.warn("担当している見積書があるため、アカウントを削除できません。ID = {}", id);
+      redirectAttributes.addFlashAttribute("message", "担当している見積書があるため、アカウントを削除できません。");
+      redirectAttributes.addFlashAttribute("messageType", "error");
+      return "redirect:/accounts";
+    }
+
     log.info("アカウントの削除が完了しました。ID = {}", id);
-    redirectAttributes.addFlashAttribute("successMessage", "アカウントの削除が完了しました。");
+    redirectAttributes.addFlashAttribute("message", "アカウントの削除が完了しました。");
     redirectAttributes.addFlashAttribute("messageType", "success");
     return "redirect:/accounts";
   }

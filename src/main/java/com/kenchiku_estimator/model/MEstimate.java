@@ -2,25 +2,24 @@ package com.kenchiku_estimator.model;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import lombok.Data;
 
 @Data
 public class MEstimate {
 
-    private int id;
+  private int id;
 
-    private String estimateNumber;
+  private String estimateNumber;
 
-    private String title;
+  private String title;
 
-    private String clientName;
+  private String clientName;
 
-    private int createdBy;
+  private int createdBy;
 
-    private LocalDate createdAt;
+  private LocalDate createdAt;
 
-    private String fullname;
+  private String fullName;
 
-    private List<MEstimateItem> items;
+  private List<MEstimateItem> items;
 }

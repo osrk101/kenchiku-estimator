@@ -30,5 +30,8 @@ public interface AccountMapper {
 
   int delete(int id);
 
+  // 担当している見積書の数を取得
+  int countEstimatesByAccountId(int id);
+
 
 }
