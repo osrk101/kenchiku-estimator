@@ -17,16 +17,18 @@
   <!-- ログイン後のページ用ヘッダー -->
   <nav layout:fragment="headerWithUser" class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container-fluid">
-      <div class="navbar-header">
+      <div class="navbar-header d-flex align-items-center">
         <a class="navbar-brand" th:text="#{estimate.page.title}"></a>
-      </div>
-      <!-- ログインユーザーを表示 -->
-      <div class="navbar-text" th:text="${#authentication.name}"></div>
 
-      <!-- アカウント管理ページへのリンク -->
-      <form method="get" th:action="@{/accounts}">
-        <button class="btn btn-outline-light" type="submit" th:text="#{accounts.page.title}"></button>
-      </form>
+        <!-- ログインユーザーを表示 -->
+        <div class="alert alert-light my-1 py-1 mx-3" role="alert">
+          ユーザー名: <span th:text="${#authentication.name}"></span>
+        </div>
+        <!-- アカウント管理ページへのリンク -->
+        <form method="get" th:action="@{/accounts}">
+          <button class="btn btn-outline-light" type="submit" th:text="#{accounts.page.title}"></button>
+        </form>
+      </div>
       <!-- ナビゲーションメニュー -->
       <ul class="navbar-nav mr-auto">
         <li class="nav-item" th:classappend="${currentPath != null and currentPath.startsWith('/estimates')} ? 'active'"><a class="nav-link" th:href="@{/estimates}" th:text="#{estimate.view}"></a></li>

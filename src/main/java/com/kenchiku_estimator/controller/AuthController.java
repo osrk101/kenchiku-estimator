@@ -13,7 +13,7 @@ public class AuthController {
   // ログイン画面を表示する
   @GetMapping("/index")
   public String login(@ModelAttribute AccountForm accountForm) {
-    log.info("ログイン画面を表示します");
+    log.info("ログイン画面を表示");
     return "index";
   }
 }

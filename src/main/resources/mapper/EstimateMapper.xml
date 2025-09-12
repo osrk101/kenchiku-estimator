@@ -11,28 +11,28 @@
 
 	<!-- 見積書の一覧を取得 -->
 	<select id="findAll"
-		resultType="com.kenchiku_estimator.model.MEstimate">
+		resultType="com.kenchiku_estimator.model.Estimate">
 		SELECT e.id,
 		e.estimate_number,
 		e.title,
 		e.client_name AS clientName,
 		e.created_by,
 		e.created_at,
-		a.full_name AS fullname
+		a.full_name AS fullName
 		FROM estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
 		ORDER BY e.created_at DESC
 	</select>
 	<!-- 検索ワードに該当する見積書を取得 -->
 	<select id="findBySearchWords" parameterType="String"
-		resultType="com.kenchiku_estimator.model.MEstimate">
+		resultType="com.kenchiku_estimator.model.Estimate">
 		SELECT e.id,
 		e.estimate_number,
 		e.title,
 		e.client_name AS clientName,
 		e.created_by,
 		e.created_at,
-		a.full_name AS fullname
+		a.full_name AS fullName
 		FROM estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
 		WHERE e.title LIKE CONCAT('%', #{searchWords}, '%')
@@ -43,21 +43,21 @@
 	</select>
 	<!-- IDで見積書を取得 -->
 	<select id="findById" parameterType="int"
-		resultType="com.kenchiku_estimator.model.MEstimate">
+		resultType="com.kenchiku_estimator.model.Estimate">
 		SELECT e.id,
 		e.estimate_number,
 		e.title,
 		e.client_name AS clientName,
 		e.created_by,
 		e.created_at,
-		a.full_name AS fullname
+		a.full_name AS fullName
 		FROM estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
 		WHERE e.id = #{id}
 	</select>
 	<!-- 新規登録 -->
-	<insert id="insert"
-		parameterType="com.kenchiku_estimator.model.MEstimate"
+	<insert id="insertEstimate"
+		parameterType="com.kenchiku_estimator.model.Estimate"
 		useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO estimates
 		(estimate_number, title, client_name,created_by, created_at)
@@ -65,15 +65,15 @@
 		(#{estimateNumber}, #{title}, #{clientName}, #{createdBy}, CURRENT_DATE)
 	</insert>
 	<!-- 更新 -->
-	<update id="update"
-		parameterType="com.kenchiku_estimator.model.MEstimate">
+	<update id="updateEstimate"
+		parameterType="com.kenchiku_estimator.model.Estimate">
 		UPDATE estimates
 		SET title = #{title}, created_by = #{createdBy}, created_at =
 		CURRENT_DATE
 		WHERE id = #{id}
 	</update>
 	<!-- 削除 -->
-	<delete id="delete" parameterType="int">
+	<delete id="deleteEstimate" parameterType="int">
 		DELETE
 		FROM estimates
 		WHERE id = #{id}

@@ -2,33 +2,31 @@ package com.kenchiku_estimator.repository;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
-import com.kenchiku_estimator.model.MAccount;
+import com.kenchiku_estimator.model.Account;
 
 @Mapper
 public interface AccountMapper {
 
   // 全件取得
-  List<MAccount> findAll();
+  List<Account> findAll();
 
   // 氏名を全件取得
-  List<MAccount> findAllFullname();
+  List<Account> findAllFullname();
 
   // usernameでアカウントを取得
-  MAccount findByUsername(String username);
+  Account findByUsername(String username);
 
   // IDでアカウントを1件取得
-  MAccount findById(int id);
+  Account findById(int id);
 
-  // 新規アカウントの登録
-  void insert(MAccount account);
+  // アカウントの新規作成
+  void insert(Account account);
 
   // アカウントの更新
-
-  int update(MAccount account);
+  boolean update(Account account);
 
   // アカウントの削除
-
-  int delete(int id);
+  boolean delete(int id);
 
   // 担当している見積書の数を取得
   int countEstimatesByAccountId(int id);

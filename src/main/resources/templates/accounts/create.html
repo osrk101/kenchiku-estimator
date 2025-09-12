@@ -1,4 +1,4 @@
-<!--  templetes/accounts/create.html -->
+<!-- templates/accounts/create.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
@@ -22,7 +22,7 @@
 
       <div class="col-4">
         <label for="password" class="form-label">パスワード</label>
-        <input type="password" th:field="*{password}" class="form-control" id="password"  maxlength="20" min="8" required>
+        <input type="password" th:field="*{password}" class="form-control" id="password" maxlength="20" min="8" required>
         <th:block th:with="fieldname='password'">
           <div th:if="${#fields.hasErrors(fieldname)}" th:errors="*{password}" class="text-danger"></div>
         </th:block>

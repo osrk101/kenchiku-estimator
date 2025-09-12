@@ -1,3 +1,4 @@
+<!-- templates/estimates.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
@@ -10,20 +11,20 @@
 
     <!-- メッセージ表示 -->
     <form th:action="@{/estimates}" method="get" class="row g-2 align-items-center mb-4">
-      <div class="col">
+      <div class="col-4">
         <div th:if="${message != null and !#strings.isEmpty(message)}">
           <div th:class="'alert ' + (${messageType} == 'error' ? 'alert-danger' : 'alert-success')" th:text="${message}"></div>
         </div>
       </div>
 
       <!-- タイトル -->
-      <div class="col text-center">
+      <div class="col-4 text-center">
         <h1>見積書一覧</h1>
       </div>
       <!-- 検索フォーム -->
       <div class="col-auto d-flex gap-2">
-        <input type="text" class="form-control" name="searchWords" th:value="${searchWords}" placeholder="見積番号、件名、顧客名" />
         <button type="submit" class="btn btn-primary" style="white-space: nowrap;">検索</button>
+        <input type="text" class="form-control" name="searchWords" th:value="${searchWords}" placeholder="見積番号、件名、顧客名" />
         <!-- 新規作成ボタン -->
         <a class="btn btn-success" th:href="@{/estimates/create}" style="white-space: nowrap;">新規作成</a>
       </div>
@@ -46,9 +47,11 @@
           <td th:text="${estimate.estimateNumber}"></td>
           <td th:text="${estimate.title}"></td>
           <td th:text="${estimate.clientName}"></td>
-          <td th:text="${estimate.fullname}"></td>
+          <td th:text="${estimate.fullName}"></td>
           <td th:text="${estimate.createdAt}"></td>
-          <td><a th:href="@{|/estimates/detail/${estimate.id}|}" class="btn btn-outline-primary btn-sm">詳細</a> <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-outline-secondary btn-sm">編集</a> <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" class="btn btn-outline-danger btn-sm">削除</a></td>
+          <td>
+            <a th:href="@{|/estimates/detail/${estimate.id}|}" class="btn btn-outline-primary btn-sm">詳細</a> <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-outline-secondary btn-sm">編集</a> <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" class="btn btn-outline-danger btn-sm">削除</a>
+          </td>
         </tr>
         <tr th:if="${#lists.isEmpty(estimatesList)}">
           <td colspan="5" class="text-center">見積書がありません</td>

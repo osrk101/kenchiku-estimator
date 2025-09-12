@@ -10,7 +10,7 @@
   <div layout:fragment="content">
     <div class="container text-center">
       <h1 th:text="${status} + ' ' + ${error}"></h1>
-      <p>エラーが発生しました</p>
+      <p>エラーが発生</p>
       <p th:text="${message}"></p>
       <form th:action="@{/logout}" method="post">
         <button class="btn btn-warning btn-sm" th:text="#{logout}"></button>

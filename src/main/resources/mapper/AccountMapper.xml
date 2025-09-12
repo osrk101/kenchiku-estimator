@@ -7,33 +7,33 @@
 
 	<!-- アカウント全取得 -->
 	<select id="findAll"
-		resultType="com.kenchiku_estimator.model.MAccount">
+		resultType="com.kenchiku_estimator.model.Account">
 		SELECT * FROM accounts
 	</select>
 	<!-- アカウント氏名全取得 -->
 	<select id="findAllFullname"
-		resultType="com.kenchiku_estimator.model.MAccount">
+		resultType="com.kenchiku_estimator.model.Account">
 		SELECT id, full_name FROM accounts
 	</select>
 	<!-- IDでアカウントを取得 -->
 	<select id="findById" parameterType="int"
-		resultType="com.kenchiku_estimator.model.MAccount">
+		resultType="com.kenchiku_estimator.model.Account">
 		SELECT * FROM accounts WHERE id = #{id}
 	</select>
 	<!-- ユーザ名でアカウントを取得 -->
 	<select id="findByUsername" parameterType="string"
-		resultType="com.kenchiku_estimator.model.MAccount">
+		resultType="com.kenchiku_estimator.model.Account">
 		SELECT * FROM accounts WHERE username = #{username}
 	</select>
 	<!-- 新規登録 -->
 	<insert id="insert"
-		parameterType="com.kenchiku_estimator.model.MAccount">
+		parameterType="com.kenchiku_estimator.model.Account">
 		INSERT INTO accounts (username, password, full_name, role) VALUES
 		(#{username}, #{password}, #{fullName}, #{role})
 	</insert>
 	<!-- 更新 -->
 	<update id="update"
-		parameterType="com.kenchiku_estimator.model.MAccount">
+		parameterType="com.kenchiku_estimator.model.Account">
 		UPDATE accounts
 		<set>
 			username = #{username},

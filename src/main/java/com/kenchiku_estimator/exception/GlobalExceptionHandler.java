@@ -24,15 +24,14 @@ public class GlobalExceptionHandler {
     return "forward:/error";
   }
 
-
-
   // その他の例外の処理
   @ExceptionHandler(Exception.class)
   public String handleException(Exception e, HttpServletRequest req, HttpServletResponse res) {
     req.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.INTERNAL_SERVER_ERROR.value());
     req.setAttribute(RequestDispatcher.ERROR_MESSAGE, "予期せぬエラーが発生しました。");
-    log.error("予期せぬエラーが発生しました: {}", e.getMessage(), e);
+    log.error("予期せぬエラーが発生: {}", e.getMessage(), e);
     return "forward:/error";
   }
+
 
 }

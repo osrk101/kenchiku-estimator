@@ -3,7 +3,7 @@ package com.kenchiku_estimator.model;
 import lombok.Data;
 
 @Data
-public class MAccount {
+public class Account {
 
   private int id;
 

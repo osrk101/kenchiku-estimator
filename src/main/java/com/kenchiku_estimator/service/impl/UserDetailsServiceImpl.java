@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.kenchiku_estimator.model.CustomUserDetails;
-import com.kenchiku_estimator.model.MAccount;
+import com.kenchiku_estimator.model.Account;
 import com.kenchiku_estimator.repository.AccountMapper;
 
 @Service
@@ -17,7 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MAccount account = accountMapper.findByUsername(username);
+        Account account = accountMapper.findByUsername(username);
         if (account == null) {
             throw new UsernameNotFoundException("ユーザーが見つかりません: " + username);
         }

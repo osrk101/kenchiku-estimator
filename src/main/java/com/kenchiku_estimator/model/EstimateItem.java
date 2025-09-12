@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
-public class MEstimateItem {
+public class EstimateItem {
 
     private int id;
 

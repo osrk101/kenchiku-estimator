@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class MEstimate {
+public class Estimate {
 
   private int id;
 
@@ -21,5 +21,5 @@ public class MEstimate {
 
   private String fullName;
 
-  private List<MEstimateItem> items;
+  private List<EstimateItem> items;
 }
