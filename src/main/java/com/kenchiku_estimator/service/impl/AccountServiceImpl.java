@@ -73,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
       log.info("パスワード更新");
       account.setPassword(encodePassword(account.getPassword()));
     }
-    accountMapper.insert(account);
+    accountMapper.updateAccount(account);
   }
 
 
@@ -87,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
       account.setPassword(encodePassword(account.getPassword()));
     }
 
-    boolean isUpdate = accountMapper.update(account);
+    boolean isUpdate = accountMapper.updateAccount(account);
 
     if (isUpdate) {
       return true;
@@ -106,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
       return false;
     }
 
-    boolean isDelete = accountMapper.delete(id);
+    boolean isDelete = accountMapper.deleteAccount(id);
 
     if (isDelete) {
       return true;

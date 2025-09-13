@@ -26,13 +26,13 @@
 		SELECT * FROM accounts WHERE username = #{username}
 	</select>
 	<!-- 新規登録 -->
-	<insert id="insert"
+	<insert id="insertAccount"
 		parameterType="com.kenchiku_estimator.model.Account">
 		INSERT INTO accounts (username, password, full_name, role) VALUES
 		(#{username}, #{password}, #{fullName}, #{role})
 	</insert>
 	<!-- 更新 -->
-	<update id="update"
+	<update id="updateAccount"
 		parameterType="com.kenchiku_estimator.model.Account">
 		UPDATE accounts
 		<set>
@@ -47,8 +47,12 @@
 	</update>
 
 	<!-- 削除 -->
-	<delete id="delete" parameterType="int">
+	<delete id="deleteAccount" parameterType="int">
 		DELETE FROM accounts WHERE id = #{id}
 	</delete>
-
+	
+	<!-- 担当している見積書の数を取得 -->
+	<select id="countEstimatesByAccountId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM estimates WHERE created_by = #{id}
+    </select>
 </mapper>

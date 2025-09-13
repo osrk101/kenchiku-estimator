@@ -20,13 +20,13 @@ public interface AccountMapper {
   Account findById(int id);
 
   // アカウントの新規作成
-  void insert(Account account);
+  void insertAccount(Account account);
 
   // アカウントの更新
-  boolean update(Account account);
+  boolean updateAccount(Account account);
 
   // アカウントの削除
-  boolean delete(int id);
+  boolean deleteAccount(int id);
 
   // 担当している見積書の数を取得
   int countEstimatesByAccountId(int id);
