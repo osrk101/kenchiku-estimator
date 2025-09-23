@@ -40,12 +40,7 @@
         </th:block>
       </div>
 
-      <div class="row align-items-end mb-3">
-        <!-- 内訳追加ボタン -->
-        <div class="col-2 d-flex flex-column justify-content-end">
-          <button type="button" class="btn btn-secondary" onclick="addItem()">内訳を追加</button>
-        </div>
-      </div>
+
       <!-- 内訳テーブル -->
       <div class="row">
         <div class="col">
@@ -121,20 +116,20 @@
           </div>
         </div>
       </div>
+      <div class="row align-items-end mb-3">
+        <!-- 内訳追加ボタン -->
+        <div class="col-2 d-flex flex-column justify-content-end">
+          <button type="button" class="btn btn-secondary" onclick="addItem()">内訳を追加</button>
+        </div>
+      </div>
 
       <div class=" row">
         <div class="col-4">
-          <!-- 全体のエラー表示-->
-          <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-            <div th:each="error : ${#fields.errors('*')}" th:text="${error}"></div>
-          </div>
+          <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">入力内容にエラーがあります。各項目を確認してください。</div>
         </div>
-        <div class="col-4">
-          <!-- 登録ボタン -->
-          <div class="mb-3">
-            <button type="submit" class="btn btn-primary">登録</button>
-            <a th:href="@{/estimates}" class="btn btn-outline-secondary">キャンセル</a>
-          </div>
+        <div class="col-4 mb-3 text-center">
+          <button type="submit" class="btn btn-primary">登録</button>
+          <a th:href="@{/estimates}" class="btn btn-secondary">キャンセル</a>
         </div>
       </div>
     </form>
@@ -195,9 +190,9 @@
                 const tax = subtotal * 0.1; // 10%の消費税
                 const total = subtotal + tax;
 
-                document.getElementById("totalAmount").value = subtotal.toFixed(2);
-                document.getElementById("taxAmount").value = tax.toFixed(2);
-                document.getElementById("grandTotal").value = total.toFixed(2);
+                document.getElementById("totalAmount").value = subtotal.toFixed(0);
+                document.getElementById("taxAmount").value = tax.toFixed(0);
+                document.getElementById("grandTotal").value = total.toFixed(0);
             }
             document.addEventListener("DOMContentLoaded", function () {
                 const itemsDiv = document.getElementById("items");

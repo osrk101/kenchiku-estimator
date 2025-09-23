@@ -121,10 +121,12 @@ public class EstimateServiceImpl implements EstimateService {
       createNewEstimate(estimate);
     } else {
       updateEstimate(estimate);
+      estimateItemService.deleteEstimateItem(estimate.getId());
     }
 
     for (EstimateItemForm itemForm : itemForms) {
       EstimateItem item = modelMapper.map(itemForm, EstimateItem.class);
+      item.setId(0);
       item.setEstimateId(estimate.getId());
 
       if (isNew || item.getId() == 0) {

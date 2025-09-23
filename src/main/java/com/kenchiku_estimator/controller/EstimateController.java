@@ -1,7 +1,6 @@
 package com.kenchiku_estimator.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,23 +143,7 @@ public class EstimateController {
       return "redirect:/estimates";
     }
 
-    setupEditForm(estimate, estimateForm, model);
-
-    List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
-    log.info("取得された見積書アイテム = {}", estimateItems);
-
-    List<EstimateItemForm> itemForms = estimateItems.stream().map(item -> {
-      EstimateItemForm form = new EstimateItemForm();
-      form.setEstimateId(item.getEstimateId());
-      form.setItemName(item.getItemName());
-      form.setUnitPrice(item.getUnitPrice());
-      form.setQuantity(item.getQuantity());
-      form.setUnit(item.getUnit());
-      return form;
-    }).toList();
-
-    estimateForm.setItems(itemForms);
-    model.addAttribute("estimateForm", estimateForm);
+    setupEditFormForGet(estimate, estimateForm, model);
 
     return "estimates/edit";
   }
@@ -173,10 +156,7 @@ public class EstimateController {
       RedirectAttributes redirectAttributes) throws Exception {
     if (bindingResult.hasErrors()) {
       log.error("見積書の入力内容にエラー: {}", bindingResult.getAllErrors());
-
-      bindingResult.reject("error.update", "見積書の入力内容にエラーがあります。");
-      setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
-
+      populateChoices(model, estimateForm);
       return "estimates/edit";
     }
 
@@ -199,19 +179,8 @@ public class EstimateController {
       } catch (Exception e) {
         log.error("見積書の更新に失敗: {}", e.getMessage());
 
-        setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
-
-        List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
-        List<EstimateItemForm> itemForms = new ArrayList<>();
-
-        for (EstimateItem item : estimateItems) {
-          EstimateItemForm itemForm = new EstimateItemForm();
-          setupEstimateItemForm(item, itemForm, model);
-          itemForms.add(itemForm);
-        }
-
-        estimateForm.setItems(itemForms);
-        model.addAttribute("estimateForm", estimateForm);
+        List<Account> fullNameList = accountService.getAllAccountsFullname();
+        model.addAttribute("fullNameList", fullNameList);
 
         bindingResult.reject("error.update", "見積書の更新に失敗");
       }
@@ -237,20 +206,6 @@ public class EstimateController {
 
       } catch (Exception e) {
         log.error("別件での見積書保存に失敗: {}", e.getMessage());
-
-        setupEditForm(estimateService.getEstimateOne(id), estimateForm, model);
-
-        List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(id);
-        List<EstimateItemForm> itemForms = new ArrayList<>();
-
-        for (EstimateItem item : estimateItems) {
-          EstimateItemForm itemForm = new EstimateItemForm();
-          setupEstimateItemForm(item, itemForm, model);
-          itemForms.add(itemForm);
-        }
-
-        estimateForm.setItems(itemForms);
-        model.addAttribute("estimateForm", estimateForm);
 
         bindingResult.reject("error.saveAsNew", "別件での見積書保存に失敗。");
       }
@@ -347,16 +302,39 @@ public class EstimateController {
   public void setupEditForm(Estimate estimate, EstimateForm estimateForm, Model model) {
     modelMapper.map(estimate, estimateForm);
     model.addAttribute("estimateForm", estimateForm);
-
-    List<Account> fullNameList = accountService.getAllAccountsFullname();
-    model.addAttribute("fullNameList", fullNameList);
   }
-
 
   // EstimateItemFormをセットアップする
   public void setupEstimateItemForm(EstimateItem item, EstimateItemForm estimateItemForm,
       Model model) {
     modelMapper.map(item, estimateItemForm);
     model.addAttribute("estimateItemForm", estimateItemForm);
+  }
+
+  // 担当者リストの選択肢をセットアップする
+  private void populateChoices(Model model, EstimateForm estimateForm) {
+    model.addAttribute("fullNameList", accountService.getAllAccountsFullname());
+    model.addAttribute("selectedAccountId", estimateForm.getCreatedBy());
+  }
+
+  // 編集画面GET 初回表示専用（ここだけフォームを上書き＆addAttribute）
+  private void setupEditFormForGet(Estimate estimate, EstimateForm estimateForm, Model model) {
+    modelMapper.map(estimate, estimateForm);
+
+    List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(estimate.getId());
+    List<EstimateItemForm> itemForms = estimateItems.stream().map(item -> {
+      EstimateItemForm f = new EstimateItemForm();
+      f.setId(item.getId());
+      f.setEstimateId(item.getEstimateId());
+      f.setItemName(item.getItemName());
+      f.setUnitPrice(item.getUnitPrice());
+      f.setQuantity(item.getQuantity());
+      f.setUnit(item.getUnit());
+      return f;
+    }).toList();
+    estimateForm.setItems(itemForms);
+
+    model.addAttribute("estimateForm", estimateForm);
+    populateChoices(model, estimateForm);
   }
 }

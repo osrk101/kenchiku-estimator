@@ -36,8 +36,8 @@
 
     <!-- ボタン（中央・横並び） -->
     <form th:action="@{|/accounts/delete/${account.id}|}" method="post" class="d-flex justify-content-center gap-3 mt-3">
-      <a th:href="@{/accounts}" class="btn btn-secondary px-4">戻る</a>
-      <button type="submit" class="btn btn-danger px-4">削除</button>
+      <button type="submit" class="btn btn-danger">削除</button>
+      <a th:href="@{/accounts}" class="btn btn-secondary">キャンセル</a>
     </form>
 
   </div>

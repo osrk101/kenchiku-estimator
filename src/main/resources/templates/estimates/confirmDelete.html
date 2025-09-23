@@ -59,10 +59,14 @@
     <div class="alert alert-warning" role="alert">
       <strong>注意:</strong> この見積書を削除しますか？
     </div>
-    <form th:action="@{|/estimates/delete/${estimate.id}|}" method="post">
-      <button type="submit" class="btn btn-danger">削除</button>
-      <a th:href="@{/estimates}" class="btn btn-secondary">キャンセル</a>
-    </form>
+    <div class="row">
+      <div class="text-center">
+        <form th:action="@{|/estimates/delete/${estimate.id}|}" method="post">
+          <button type="submit" class="btn btn-danger">削除</button>
+          <a th:href="@{/estimates}" class="btn btn-secondary">キャンセル</a>
+        </form>
+      </div>
+    </div>
   </div>
 </body>
 

@@ -73,14 +73,10 @@
       </tbody>
     </table>
     <div class="row mb-3">
-      <div class="col-md-4 text-end">
-        <a th:href="@{/estimates}" class="btn btn-secondary">一覧に戻る</a>
-      </div>
-      <div class="col-md-4 text-center">
+      <div class="text-center">
         <a th:href="@{|/estimates/edit/${estimate.id}|}" class="btn btn-primary">編集</a>
-      </div>
-      <div class="col-md-4 text-start">
         <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" class="btn btn-danger">削除</a>
+        <a th:href="@{/estimates}" class="btn btn-secondary">一覧に戻る</a>
       </div>
     </div>
   </div>
