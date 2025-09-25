@@ -3,71 +3,83 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/commonLayout}">
 
 <head>
-<meta charset="UTF-8">
-<title>アカウント編集</title>
+  <meta charset="UTF-8">
+<title th:text="#{label.accountEdit}"></title>
 </head>
+
 <body>
-  <div layout:fragment="content" class="container mt-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h5 class="mb-0">アカウント編集</h5>
+  <div layout:fragment="content">
+    <h1 th:text="#{label.accountEdit}"></h1>
+
+    <form class="row g-2"
+          th:action="@{/accounts/edit/{id}(id=${accountForm.id})}"
+          method="post"
+          th:object="${accountForm}">
+      <input type="hidden" th:field="*{id}">
+
+      <!-- ユーザー名 -->
+      <div class="col-4">
+        <label for="username" th:text="#{label.username}" class="form-label">ユーザー名</label>
+        <input type="text" th:field="*{username}" class="form-control" id="username" maxlength="50" required>
+        <th:block th:with="fieldName='username'">
+          <div th:if="${#fields.hasErrors(fieldName)}"
+               th:errors="*{username}"
+               class="text-danger"></div>
+        </th:block>
+        <div class="form-text">※50文字以内</div>
       </div>
-      <div class="card-body">
-        <form th:action="@{/accounts/edit/{id}(id=${accountForm.id})}" method="post" th:object="${accountForm}">
-          <input type="hidden" th:field="*{id}" />
 
-          <!-- ユーザー名 -->
-          <div class="row mb-3">
-            <label for="username" class="col-2 col-form-label">ユーザー名</label>
-            <div class="col-6">
-              <input type="text" th:field="*{username}" class="form-control" id="username">
-              <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>
-              <div class="form-text">※50文字以内</div>
-            </div>
-          </div>
-
-          <!-- パスワード -->
-          <div class="row mb-3">
-            <label for="password" class="col-2 form-label">パスワード</label>
-            <div class="col-6">
-              <input type="password" th:field="*{password}" class="form-control" id="password">
-              <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
-              <div class="form-text">※8文字以上、20文字以内</div>
-            </div>
-          </div>
-
-          <!-- 権限 -->
-          <div class="row mb-3">
-            <label for="role" class="col-2 form-label">権限</label>
-            <div class="col-4">
-              <select th:field="*{role}" class="form-select" id="role">
-                <option value="USER">一般</option>
-                <option value="ADMIN">管理者</option>
-              </select>
-              <div th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="text-danger"></div>
-            </div>
-          </div>
-
-          <!-- 氏名 -->
-          <div class="row mb-3">
-            <label for="fullName" class="col-2 form-label">氏名</label>
-            <div class="col-6">
-              <input type="text" th:field="*{fullName}" class="form-control" id="fullName">
-              <div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-danger"></div>
-              <div class="form-text">※50文字以内</div>
-            </div>
-          </div>
-
-          <!-- ボタン -->
-          <div class="row">
-            <div class="test-center">
-              <button type="submit" class="btn btn-primary">登録</button>
-              <a class="btn btn-secondary" th:href="@{/accounts}">一覧に戻る</a>
-            </div>
-          </div>
-        </form>
+      <!-- パスワード -->
+      <div class="col-4">
+        <label for="password" th:text="#{label.password}" class="form-label">パスワード</label>
+        <input type="password" th:field="*{password}" class="form-control" id="password" minlength="8" maxlength="20">
+        <th:block th:with="fieldName='password'">
+          <div th:if="${#fields.hasErrors(fieldName)}"
+               th:errors="*{password}"
+               class="text-danger"></div>
+        </th:block>
+        <div class="form-text">※8文字以上、20文字以内</div>
       </div>
-    </div>
+
+      <!-- 権限 -->
+      <div class="col-4">
+        <label for="role" th:text="#{label.role}" class="form-label">権限</label>
+        <select th:field="*{role}" class="form-select" id="role" required>
+          <option value="USER" th:text="#{role.user}">一般</option>
+          <option value="ADMIN" th:text="#{role.admin}">管理者</option>
+        </select>
+        <th:block th:with="fieldName='role'">
+          <div th:if="${#fields.hasErrors(fieldName)}"
+               th:errors="*{role}"
+               class="text-danger"></div>
+        </th:block>
+      </div>
+
+      <!-- 氏名 -->
+      <div class="col-4">
+        <label for="fullName" th:text="#{label.fullName}" class="form-label">氏名</label>
+        <input type="text" th:field="*{fullName}" class="form-control" id="fullName" maxlength="50" required>
+        <th:block th:with="fieldName='fullName'">
+          <div th:if="${#fields.hasErrors(fieldName)}"
+               th:errors="*{fullName}"
+               class="text-danger"></div>
+        </th:block>
+        <div class="form-text">※50文字以内</div>
+      </div>
+
+      <!-- グローバルエラー -->
+      <div class="col-12">
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+          入力内容にエラーがあります。各項目を確認してください。
+        </div>
+      </div>
+
+      <!-- ボタン -->
+      <div class="col-12 text-center mt-2">
+        <button type="submit" th:text="#{button.update}" class="btn btn-primary">更新</button>
+        <a class="btn btn-secondary" th:text="#{button.back}" th:href="@{/accounts}">戻る</a>
+      </div>
+    </form>
   </div>
 </body>
 </html>
