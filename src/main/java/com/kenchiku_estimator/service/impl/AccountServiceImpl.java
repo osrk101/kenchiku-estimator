@@ -1,13 +1,16 @@
 package com.kenchiku_estimator.service.impl;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.kenchiku_estimator.model.Account;
 import com.kenchiku_estimator.repository.AccountMapper;
 import com.kenchiku_estimator.repository.EstimateMapper;
 import com.kenchiku_estimator.service.AccountService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -73,8 +76,9 @@ public class AccountServiceImpl implements AccountService {
       log.info("パスワード更新");
       account.setPassword(encodePassword(account.getPassword()));
     }
-    accountMapper.updateAccount(account);
+    accountMapper.insertAccount(account);
   }
+  
 
 
   // アカウントの更新

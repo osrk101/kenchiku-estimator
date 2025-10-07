@@ -42,7 +42,7 @@
         <tr th:each="account : ${accountsList}">
           <td th:text="${account.id}"></td>
           <td th:text="${account.username}"></td>
-          <td th:text="${account.role}"></td>
+          <td th:text="#{|role.${#strings.toUpperCase(account.role)}|}"></td>
           <td th:text="${account.fullName}"></td>
           <td>
             <a th:href="@{|/accounts/edit/${account.id}|}" class="btn btn-outline-secondary btn-sm">編集</a> <a th:href="@{|/accounts/confirmDelete/${account.id}|}" class="btn btn-outline-danger btn-sm">削除</a>

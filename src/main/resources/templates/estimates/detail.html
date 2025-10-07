@@ -68,7 +68,7 @@
           <td class="text-end fw-bold" th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
         </tr>
         <tr th:if="${#lists.isEmpty(estimateItems)}">
-          <td colspan="5" class="text-center">内訳がありません</td>
+          <td colspan="5" class="text-center" th:text="${message.emptyBreakdown}"></td>
         </tr>
       </tbody>
     </table>

@@ -68,7 +68,7 @@
 	<update id="updateEstimate"
 		parameterType="com.kenchiku_estimator.model.Estimate">
 		UPDATE estimates
-		SET title = #{title}, created_by = #{createdBy}, created_at =
+		SET title = #{title}, client_name = #{clientName}, created_by = #{createdBy}, created_at =
 		CURRENT_DATE
 		WHERE id = #{id}
 	</update>

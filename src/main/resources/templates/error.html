@@ -13,10 +13,10 @@
       <p>エラーが発生</p>
       <p th:text="${message}"></p>
       <form th:action="@{/logout}" method="post">
-        <button class="btn btn-warning btn-sm" th:text="#{logout}"></button>
+        <button class="btn btn-warning btn-sm" th:text="#{button.logout}"></button>
       </form>
       <!--  前のページに戻る -->
-      <button class="btn btn-secondary btn-sm mt-2" onclick="history.back()" th:text="#{back}"></button>
+      <button class="btn btn-secondary btn-sm mt-2" onclick="history.back()" th:text="#{button.back}"></button>
     </div>
   </div>
 
