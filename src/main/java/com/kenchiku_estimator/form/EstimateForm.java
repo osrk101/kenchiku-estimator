@@ -5,8 +5,10 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -28,6 +30,7 @@ public class EstimateForm {
     private Integer createdBy;
 
     @Valid
+    @NotEmpty(message = "見積項目を1つ以上追加してください")
     private List<EstimateItemForm> items = new ArrayList<>();
 
 }

@@ -1,102 +1,107 @@
 <!-- templates/accounts/edit.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/commonLayout}">
+	layout:decorate="~{layout/commonLayout}">
 
 <head>
-  <meta charset="UTF-8">
-  <title th:text="#{label.accountEdit}"></title>
+	<meta charset="UTF-8">
+	<title th:text="#{label.accountEdit}"></title>
 </head>
 
 <body>
-<div layout:fragment="content">
-  <form th:action="@{/accounts/edit/{id}(id=${accountForm.id})}" method="post" th:object="${accountForm}">
-    <input type="hidden" th:field="*{id}">
+	<div layout:fragment="content">
+		<form th:action="@{/accounts/edit/{id}(id=${accountForm.id})}" method="post" th:object="${accountForm}">
+			<input type="hidden" th:field="*{id}">
 
-    <div class="card">
-      <div class="card-header">
-        <h1 th:text="#{label.accountEdit}"></h1>
-      </div>
+			<div class="card">
+				<div class="card-header">
+					<h1 th:text="#{label.accountEdit}"></h1>
+				</div>
+				<div class="card-body">
+					<!-- ユーザー名 -->
+					<div class="row mb-3">
+						<div class="col-6 text-center">
+							<label for="username" th:text="#{label.username}" class="form-label"></label>
+						</div>
+						<div class="col-4 text-center">
+							<input type="text" th:field="*{username}" class="form-control" id="username" maxlength="50"
+								required>
+							<div class="form-text" th:text="#{message.usernameValid}"></div>
+						</div>
+						<div class="col-2">
+							<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger">
+							</div>
+						</div>
+					</div>
 
-      <div class="card-body">
+					<!-- パスワード（任意・未入力なら変更しない） -->
+					<div class="row mb-3">
+						<div class="col-6 text-center">
+							<label for="password" th:text="#{label.password}" class="form-label"></label>
+						</div>
+						<div class="col-4 text-center">
+							<input type="password" th:field="*{password}" class="form-control" id="password">
+							<div class="form-text" th:text="#{message.passwordEditValid}"></div>
+						</div>
+						<div class="col-2">
+							<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">
+							</div>
+						</div>
+					</div>
 
-        <!-- ユーザー名 -->
-        <div class="row mb-3">
-          <div class="col-6 text-center">
-            <label for="username" th:text="#{label.username}" class="form-label"></label>
-          </div>
-          <div class="col-4 text-center">
-            <input type="text" th:field="*{username}" class="form-control" id="username" maxlength="50" required>
-            <div class="form-text" th:text="#{message.usernameValid}"></div>
-          </div>
-          <div class="col-2">
-            <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>
-          </div>
-        </div>
+					<!-- 権限 -->
+					<div class="row mb-3">
+						<div class="col-6 text-center">
+							<label for="role" th:text="#{label.role}" class="form-label"></label>
+						</div>
+						<div class="col-4 text-center">
+							<select th:field="*{role}" class="form-select" id="role" required>
+								<option value="USER" th:text="#{role.USER}"></option>
+								<option value="ADMIN" th:text="#{role.ADMIN}"></option>
+							</select>
+						</div>
+						<div class="col-2">
+							<div th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="text-danger"></div>
+						</div>
+					</div>
 
-        <!-- パスワード（任意・未入力なら変更しない） -->
-        <div class="row mb-3">
-          <div class="col-6 text-center">
-            <label for="password" th:text="#{label.password}" class="form-label"></label>
-          </div>
-          <div class="col-4 text-center">
-            <input type="password" th:field="*{password}" class="form-control" id="password">
-            <div class="form-text" th:text="#{message.passwordEditValid}"></div>
-          </div>
-          <div class="col-2">
-            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
-          </div>
-        </div>
+					<!-- 氏名 -->
+					<div class="row mb-3">
+						<div class="col-6 text-center">
+							<label for="fullName" th:text="#{label.fullName}" class="form-label"></label>
+						</div>
+						<div class="col-4 text-center">
+							<input type="text" th:field="*{fullName}" class="form-control" id="fullName" maxlength="50"
+								required>
+							<div class="form-text" th:text="#{message.fullNameValid}"></div>
+						</div>
+						<div class="col-2">
+							<div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-danger">
+							</div>
+						</div>
+					</div>
 
-        <!-- 権限 -->
-        <div class="row mb-3">
-          <div class="col-6 text-center">
-            <label for="role" th:text="#{label.role}" class="form-label"></label>
-          </div>
-          <div class="col-4 text-center">
-            <select th:field="*{role}" class="form-select" id="role" required>
-              <option value="USER" th:text="#{role.USER}"></option>
-              <option value="ADMIN" th:text="#{role.ADMIN}"></option>
-            </select>
-          </div>
-          <div class="col-2">
-            <div th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="text-danger"></div>
-          </div>
-        </div>
+					<!-- グローバルエラー -->
+					<div class="row mb-3">
+						<div class="col-12">
+							<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger"
+								th:text="#{message.accountCreateValid}">
+							</div>
+						</div>
+					</div>
 
-        <!-- 氏名 -->
-        <div class="row mb-3">
-          <div class="col-6 text-center">
-            <label for="fullName" th:text="#{label.fullName}" class="form-label"></label>
-          </div>
-          <div class="col-4 text-center">
-            <input type="text" th:field="*{fullName}" class="form-control" id="fullName" maxlength="50" required>
-            <div class="form-text" th:text="#{message.fullNameValid}"></div>
-          </div>
-          <div class="col-2">
-            <div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-danger"></div>
-          </div>
-        </div>
+				</div>
+			</div>
 
-        <!-- グローバルエラー -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" th:text="#{message.accountCreateValid}">
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ボタン -->
-    <div class="row mt-3">
-      <div class="text-center">
-        <button type="submit" th:text="#{button.save}" class="btn btn-primary"></button>
-        <a class="btn btn-secondary" th:text="#{button.back}" th:href="@{/accounts}"></a>
-      </div>
-    </div>
-  </form>
-</div>
+			<!-- ボタン -->
+			<div class="row mt-3">
+				<div class="text-center">
+					<button type="submit" th:text="#{button.save}" class="btn btn-primary"></button>
+					<a class="btn btn-secondary" th:text="#{button.back}" th:href="@{/accounts}"></a>
+				</div>
+			</div>
+		</form>
+	</div>
 </body>
+
 </html>

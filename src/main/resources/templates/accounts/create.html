@@ -11,6 +11,7 @@
 <body>
 	<div layout:fragment="content">
 		<form th:action="@{/accounts/create}" method="post" th:object="${accountForm}">
+
 			<div class="card">
 				<div class="card-header">
 					<h1 th:text="#{label.accountCreate}"></h1>
@@ -54,9 +55,9 @@
 						</div>
 						<div class="col-4 text-center">
 							<select th:field="*{role}" class="form-select" id="role">
-								<option value=""></option>
-								<option value="USER"></option>
-								<option value="ADMIN"></option>
+								<option value="" th:text="#{message.selectRole}"></option>
+								<option value="USER" th:text="#{role.USER}"></option>
+								<option value="ADMIN" th:text="#{role.ADMIN}"></option>
 							</select>
 						</div>
 						<div class="col-2">

@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
   public void createNewAccount(Account account) {
     log.info("Service アカウントの新規作成を実行");
 
-    if (account.getPassword() != null) {
+    if (account.getPassword() != null && !account.getPassword().isEmpty()) {
       log.info("パスワード更新");
       account.setPassword(encodePassword(account.getPassword()));
     }
@@ -86,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
   public boolean updateAccount(Account account) {
     log.info("Service アカウントの更新処理を実行");
 
-    if (account.getPassword() != null) {
+    if (account.getPassword() != null && !account.getPassword().isEmpty()) {
       log.info("パスワード更新");
       account.setPassword(encodePassword(account.getPassword()));
     }

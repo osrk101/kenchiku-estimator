@@ -39,7 +39,7 @@
 			username = #{username},
 			full_name = #{fullName},
 			role = #{role},
-			<if test="password != null and password != ''">
+			<if test="password != null">
 				password = #{password},
 			</if>
 		</set>
