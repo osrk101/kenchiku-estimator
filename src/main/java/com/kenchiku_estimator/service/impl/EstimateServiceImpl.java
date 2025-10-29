@@ -3,16 +3,19 @@ package com.kenchiku_estimator.service.impl;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.kenchiku_estimator.form.EstimateItemForm;
 import com.kenchiku_estimator.model.Estimate;
 import com.kenchiku_estimator.model.EstimateItem;
 import com.kenchiku_estimator.repository.EstimateMapper;
 import com.kenchiku_estimator.service.EstimateItemService;
 import com.kenchiku_estimator.service.EstimateService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -30,22 +33,41 @@ public class EstimateServiceImpl implements EstimateService {
   ModelMapper modelMapper;
 
 
-  // 全見積書を取得
+  // 管理者なら全見積書を取得、そうでないなら担当する見積書のみ取得
+  @Override
+  public List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin) {
+	log.info("Service ユーザーに応じた見積書を取得: isAdmin = {}, CreateBy = {}", isAdmin, createBy);
+
+	if (isAdmin) {
+	  return getAllEstimates();
+	} else {
+	  return getEstimatesByCreateBy(createBy);
+	}
+  }
+  
+  //全見積書を取得
   @Override
   public List<Estimate> getAllEstimates() {
-    log.info("Service 全見積書を取得");
+	  log.info("Service 全見積書を取得");
+	  return estimateMapper.getAllEstimates();
+  }
+  
+  // 担当する見積書を取得
+  @Override
+  public List<Estimate> getEstimatesByCreateBy(int CreateBy) {
+	log.info("Service 担当する見積書を取得: {}", CreateBy);
 
-    return estimateMapper.findAll();
+	return estimateMapper.findByCreateBy(CreateBy);
   }
 
 
-  // 検索ワードに該当する見積書を取得
+  /*// 検索ワードに該当する見積書を取得
   @Override
-  public List<Estimate> getSearchEstimates(String searchWords) {
+  public List<Estimate> getSearchEstimates(principal.getId(), isAdmin, String searchWords) {
     log.info("Service 検索ワードに該当する見積書を取得: {}", searchWords);
 
     return estimateMapper.findBySearchWords(searchWords);
-  }
+  }*/
 
 
   // 該当するIDの見積書を1件取得
@@ -150,4 +172,5 @@ public class EstimateServiceImpl implements EstimateService {
     }
     return true;
   }
-}
+  }
+

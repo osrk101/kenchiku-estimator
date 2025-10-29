@@ -7,30 +7,35 @@ import com.kenchiku_estimator.model.Estimate;
 
 public interface EstimateService {
 
-  // 全ての見積書を取得
-  public List<Estimate> getAllEstimates();
+	// 管理者なら全見積書を取得、そうでないなら担当する見積書のみ取得
+	List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin);
+	
+	// 全ての見積書を取得
+	public List<Estimate> getAllEstimates();
 
-  // 検索ワードに該当する見積書を取得
-  public List<Estimate> getSearchEstimates(String searchWords);
+	//担当する見積書を取得
+	List<Estimate> getEstimatesByCreateBy(int CreateBy);
 
-  // 該当するIDの見積書を1件取得
-  public Estimate getEstimateOne(int id);
+	// 検索ワードに該当する見積書を取得
+	public List<Estimate> getSearchEstimates(int createBy, boolean isAdmin, String searchWords);
 
-  // 見積書番号を生成
-  public String generateEstimateNumber();
+	// 該当するIDの見積書を1件取得
+	public Estimate getEstimateOne(int id);
 
-  // 新規見積書の登録
-  public void createNewEstimate(Estimate estimate);
+	// 見積書番号を生成
+	public String generateEstimateNumber();
 
-  // 見積書の更新
-  public boolean updateEstimate(Estimate estimate);
+	// 新規見積書の登録
+	public void createNewEstimate(Estimate estimate);
 
+	// 見積書の更新
+	public boolean updateEstimate(Estimate estimate);
 
-  // 見積書と見積書アイテムを一括保存
-  public void saveEstimateWithItems(Estimate estimate, List<EstimateItemForm> items, boolean b);
+	// 見積書と見積書アイテムを一括保存
+	public void saveEstimateWithItems(Estimate estimate, List<EstimateItemForm> items, boolean b);
 
-  // 見積書の削除
-  public boolean deleteEstimate(int id);
+	// 見積書の削除
+	public boolean deleteEstimate(int id);
 
 
 

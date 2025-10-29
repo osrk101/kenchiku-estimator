@@ -32,12 +32,12 @@
         </div>
         <div class="row mb-2">
           <div class="col-md-4 text-center">
-            <label class="form-label" th:text="#{label.total}"></label>
-            <p class="form-control-plaintext fw-bold fs-5" th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + ' 円'"></p>
+            <label class="form-label" th:text="#{label.subtotal}"></label>
+            <p class="form-control-plaintext fw-bold fs-5" th:text="${#numbers.formatDecimal(totalAmount, 1, 'COMMA', 2, 'POINT')} + ' 円'"></p>
           </div>
           <div class="col-md-4 text-center">
             <label class=" form-label" th:text="#{label.tax}"></label>
-            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(totalAmount * 0.1, 0, 'COMMA')} + ' 円'"></p>
+            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatDecimal(totalAmount * 0.1, 1, 'COMMA', 2, 'POINT')} + ' 円'"></p>
           </div>
           <div class="col-md-4 text-center">
             <label class="form-label" th:text="#{label.totalWithTax}"></label>
@@ -56,16 +56,19 @@
           <th th:text="#{label.unitPrice}" class="text-end"></th>
           <th th:text="#{label.quantity}" class="text-end"></th>
           <th th:text="#{label.unit}" class="text-center"></th>
-          <th th:text="#{label.total}" class="text-end"></th>
+          <th th:text="#{label.rowTotal}" class="text-end"></th>
         </tr>
       </thead>
       <tbody>
         <tr th:each="item : ${estimateItems}">
           <td th:text="${item.itemName}"></td>
-          <td class="text-end" th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}"></td>
-          <td class="text-end" th:text="${item.quantity}"></td>
+          <td class="text-end" th:text="${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+          <td class="text-end" th:text="${#numbers.formatDecimal(item.quantity, 1, 'COMMA', 2, 'POINT')}"></td>
           <td class="text-center" th:text="${item.unit}"></td>
-          <td class="text-end fw-bold" th:text="${#numbers.formatInteger(item.unitPrice * item.quantity, 0, 'COMMA')}"></td>
+          <td class="text-end fw-bold"
+            th:text="${(item.unitPrice != null and item.quantity != null) 
+              ? #numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT') 
+              : '0.00'}"></td>
         </tr>
         <tr th:if="${#lists.isEmpty(estimateItems)}">
           <td colspan="5" class="text-center" th:text="${message.emptyBreakdown}"></td>
@@ -74,9 +77,8 @@
     </table>
     <div class="row mb-3">
       <div class="text-center">
-        <a th:href="@{|/estimates/edit/${estimate.id}|}" th:text="#{button.update}" class="btn btn-primary"></a>
-        <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" th:text="#{button.delete}" class="btn btn-danger"></a>
-        <a th:href="@{/estimates}" th:text="#{button.back}" class="btn btn-secondary"></a>
+        <a th:href="@{|/estimates/edit/${estimate.id}|}" th:text="#{button.update}" class="btn btn-primary"></a> <a th:href="@{|/estimates/confirmDelete/${estimate.id}|}" th:text="#{button.delete}"
+          class="btn btn-danger"></a> <a th:href="@{/estimates}" th:text="#{button.back}" class="btn btn-secondary"></a>
       </div>
     </div>
   </div>

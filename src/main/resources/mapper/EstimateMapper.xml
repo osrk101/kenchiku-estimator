@@ -10,7 +10,24 @@
 	<!-- 見積書のマッピング -->
 
 	<!-- 見積書の一覧を取得 -->
-	<select id="findAll"
+	<select id="getAllEstimates"
+		resultType="com.kenchiku_estimator.model.Estimate">
+		SELECT e.id,
+		e.estimate_number,
+		e.title,
+		e.client_name AS
+		clientName,
+		e.created_by,
+		e.created_at,
+		a.full_name AS fullName
+		FROM
+		estimates e
+		LEFT JOIN accounts a ON e.created_by = a.id
+		ORDER BY
+		e.created_at DESC
+	</select>
+	<!-- 担当する見積書の一覧を取得 -->
+	<select id="findByCreateBy" parameterType="int"
 		resultType="com.kenchiku_estimator.model.Estimate">
 		SELECT e.id,
 		e.estimate_number,
@@ -18,28 +35,36 @@
 		e.client_name AS clientName,
 		e.created_by,
 		e.created_at,
-		a.full_name AS fullName
-		FROM estimates e
+		a.full_name AS fullName FROM
+		estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
+		WHERE e.created_by = #{createdBy}
 		ORDER BY e.created_at DESC
 	</select>
+
 	<!-- 検索ワードに該当する見積書を取得 -->
 	<select id="findBySearchWords" parameterType="String"
 		resultType="com.kenchiku_estimator.model.Estimate">
 		SELECT e.id,
 		e.estimate_number,
 		e.title,
-		e.client_name AS clientName,
+		e.client_name AS
+		clientName,
 		e.created_by,
 		e.created_at,
 		a.full_name AS fullName
-		FROM estimates e
+		FROM
+		estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
-		WHERE e.title LIKE CONCAT('%', #{searchWords}, '%')
-		OR e.client_name LIKE CONCAT('%', #{searchWords}, '%')
-		OR e.estimate_number LIKE CONCAT('%', #{searchWords}, '%')
+		WHERE e.title
+		LIKE CONCAT('%', #{searchWords}, '%')
+		OR e.client_name LIKE
+		CONCAT('%', #{searchWords}, '%')
+		OR e.estimate_number LIKE CONCAT('%',
+		#{searchWords}, '%')
 		OR e.id = #{searchWords}
-		ORDER BY e.created_at DESC
+		ORDER BY e.created_at
+		DESC
 	</select>
 	<!-- IDで見積書を取得 -->
 	<select id="findById" parameterType="int"
@@ -47,13 +72,16 @@
 		SELECT e.id,
 		e.estimate_number,
 		e.title,
-		e.client_name AS clientName,
+		e.client_name AS
+		clientName,
 		e.created_by,
 		e.created_at,
 		a.full_name AS fullName
-		FROM estimates e
+		FROM
+		estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
-		WHERE e.id = #{id}
+		WHERE e.id =
+		#{id}
 	</select>
 	<!-- 新規登録 -->
 	<insert id="insertEstimate"
@@ -62,13 +90,16 @@
 		INSERT INTO estimates
 		(estimate_number, title, client_name,created_by, created_at)
 		VALUES
-		(#{estimateNumber}, #{title}, #{clientName}, #{createdBy}, CURRENT_DATE)
+		(#{estimateNumber}, #{title}, #{clientName}, #{createdBy},
+		CURRENT_DATE)
 	</insert>
 	<!-- 更新 -->
 	<update id="updateEstimate"
 		parameterType="com.kenchiku_estimator.model.Estimate">
 		UPDATE estimates
-		SET title = #{title}, client_name = #{clientName}, created_by = #{createdBy}, created_at =
+		SET title = #{title}, client_name =
+		#{clientName}, created_by =
+		#{createdBy}, created_at =
 		CURRENT_DATE
 		WHERE id = #{id}
 	</update>
@@ -83,7 +114,8 @@
 		parameterType="String">
 		SELECT COUNT(*)
 		FROM estimates
-		WHERE estimate_number LIKE CONCAT(#{prefix}, '%')
+		WHERE estimate_number LIKE
+		CONCAT(#{prefix}, '%')
 	</select>
 	<!-- 担当している見積書の件数をカウント -->
 	<select id="countByCreatedBy" resultType="int"

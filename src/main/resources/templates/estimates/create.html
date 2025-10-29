@@ -14,8 +14,7 @@
     <form class="row" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
       <!-- 件名 -->
       <div class="col-4">
-        <label for="title" th:text="#{label.title}" class="form-label"></label>
-        <input type="text" th:field="*{title}" class="form-control">
+        <label for="title" th:text="#{label.title}" class="form-label"></label> <input type="text" th:field="*{title}" class="form-control">
         <th:block th:with="fieldName='title'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{title}" class="text-danger"></div>
         </th:block>
@@ -23,8 +22,7 @@
       </div>
       <!-- 顧客名 -->
       <div class="col-4">
-        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label>
-        <input type="text" th:field="*{clientName}" class="form-control">
+        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label> <input type="text" th:field="*{clientName}" class="form-control">
         <th:block th:with="fieldName='clientName'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{clientName}" class="text-danger"></div>
         </th:block>
@@ -32,8 +30,7 @@
       </div>
       <!-- 作成者 -->
       <div class="col-4">
-        <label for="createdBy" th:text="#{label.createdBy}" class="form-label"></label>
-        <select class="form-select" th:field="*{createdBy}">
+        <label for="createdBy" th:text="#{label.createdBy}" class="form-label"></label> <select class="form-select" th:field="*{createdBy}">
           <option value=""></option>
           <option th:each="account : ${fullNameList}" th:value="${account.id}" th:text="${account.fullName}" th:selected="${account.id} == ${selectedAccountId}"></option>
         </select>
@@ -58,61 +55,53 @@
                   <th th:text="#{label.unitPrice}"></th>
                   <th th:text="#{label.quantity}"></th>
                   <th th:text="#{label.unit}"></th>
+                  <th th:text="#{label.rowTotal}"></th>
                   <th th:text="#{label.controll}"></th>
                 </tr>
               </thead>
               <tbody>
+                <!-- 内訳行の表示 -->
                 <tr th:each="item, stat : *{items}">
-                  <td>
-                    <input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control">
-                    <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
+                  <td><input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].itemName}" class="text-danger"></div>
-                    </th:block>
-                  </td>
-                  <td>
-                    <input type="number" min="0" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control">
-                    <th:block th:with="fieldName=${'items[' + stat.index + '].unitPrice'}">
+                    </th:block></td>
+                  <td><input type="number" min="0" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control"> <th:block
+                      th:with="fieldName=${'items[' + stat.index + '].unitPrice'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unitPrice}" class="text-danger"></div>
-                    </th:block>
-                  </td>
-                  <td>
-                    <input type="number" min="0" step="0.01" th:field="*{items[__${stat.index}__].quantity}" class="form-control">
-                    <th:block th:with="fieldName=${'items[' + stat.index + '].quantity'}">
+                    </th:block></td>
+                  <td><input type="number" min="0" step="0.01" th:field="*{items[__${stat.index}__].quantity}" class="form-control"> <th:block
+                      th:with="fieldName=${'items[' + stat.index + '].quantity'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].quantity}" class="text-danger"></div>
-                    </th:block>
-                  </td>
-                  <td>
-                    <input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control">
-                    <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
+                    </th:block></td>
+                  <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unit}" class="text-danger"></div>
-                    </th:block>
-                  </td>
+                    </th:block></td>
+                  <td><input type="text" th:value="${item.unitPrice != null and item.quantity != null} ? ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT')} : ''"
+                    class="form-control js-row-total" readonly></td>
                   <td>
                     <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" th:onclick="'removeItem(this)'"></button>
                   </td>
                 </tr>
-                <!-- 内訳全体エラー表示 -->
-                <tr th:if="${#fields.hasErrors('*{items}')}">
-                  <td colspan="5">
-                    <div class="alert alert-danger" th:errors="*{items}"></div>
-                  </td>
-                </tr>
               </tbody>
+
+              <!-- 内訳全体エラー表示 -->
+              <tr th:if="${#fields.hasErrors('items')}">
+                <td colspan="6">
+                  <div class="alert alert-danger" th:errors="*{items}"></div>
+                </td>
+              </tr>
             </table>
           </div>
         </div>
         <div class="col-2">
           <div>
-            <label class="form-label" th:text="#{label.total}"></label>
-            <input type="text" id="totalAmount" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.total}"></label> <input type="text" id="totalAmount" class="form-control" readonly>
           </div>
           <div>
-            <label class="form-label" th:text="#{label.tax}"></label>
-            <input type="text" id="taxAmount" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.tax}"></label> <input type="text" id="taxAmount" class="form-control" readonly>
           </div>
           <div>
-            <label class="form-label" th:text="#{label.totalWithTax}"></label>
-            <input type="text" id="grandTotal" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.totalWithTax}"></label> <input type="text" id="grandTotal" class="form-control" readonly>
           </div>
         </div>
       </div>
@@ -139,18 +128,11 @@
     <!-- 内訳項目のテンプレート-->
     <template id="itemRowTemplate">
       <tr>
-        <td>
-          <input type="text" name="items[__index__].itemName" class="form-control">
-        </td>
-        <td>
-          <input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control">
-        </td>
-        <td>
-          <input type="number" name="items[__index__].quantity" step="0.01" class="form-control">
-        </td>
-        <td>
-          <input type="text" name="items[__index__].unit" class="form-control">
-        </td>
+        <td><input type="text" name="items[__index__].itemName" class="form-control"></td>
+        <td><input type="number" name="items[__index__].unitPrice" step="0.01" class="form-control"></td>
+        <td><input type="number" name="items[__index__].quantity" step="0.01" class="form-control"></td>
+        <td><input type="text" name="items[__index__].unit" class="form-control"></td>
+        <td><input type="text" class="form-control js-row-total" value="0.00" readonly></td>
         <td>
           <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" onclick="removeItem(this)"></button>
         </td>
@@ -161,7 +143,6 @@
   <!--  JavaScript -->
   <div layout:fragment="script">
     <script>
-			<!-- 内訳行の追加と削除、合計金額の計算 -->
 
 			// 内訳行の追加
 			function addItem() {
@@ -174,6 +155,7 @@
 				const newRow = tempDiv.querySelector("tr");
 
 				tbody.appendChild(newRow);
+				calculateTotal(); //行追加後に再計算
 			}
 			// 内訳行の削除
 			function removeItem(button) {
@@ -181,6 +163,7 @@
 				if (row) {
 					row.remove();
 				}
+				calculateTotal(); //行削除後に再計算
 			}
 			// 合計金額の計算
 
@@ -191,7 +174,11 @@
 				items.forEach(item => {
 					const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
 					const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
-					subtotal += unitPrice * quantity;
+					const rowTotal = unitPrice * quantity;
+					// 行ごとの合計を表示
+					const rowTotalInput = item.querySelector(".js-row-total");
+					rowTotalInput.value = rowTotal.toFixed(2);
+					subtotal += rowTotal;
 				});
 
 				const tax = subtotal * 0.1; // 10%の消費税
@@ -199,7 +186,9 @@
 
 				document.getElementById("totalAmount").value = subtotal.toFixed(2);
 				document.getElementById("taxAmount").value = tax.toFixed(2);
-				document.getElementById("grandTotal").value = total.toFixed(2);
+				// 小数点以下切り捨てで表示
+				const totalFloor = Math.floor(total);
+				document.getElementById("grandTotal").value = totalFloor.toLocaleString('ja-JP');
 			}
 			document.addEventListener("DOMContentLoaded", function () {
 				const itemsDiv = document.getElementById("items");

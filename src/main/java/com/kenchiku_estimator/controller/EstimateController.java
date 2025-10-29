@@ -2,9 +2,11 @@ package com.kenchiku_estimator.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,14 +17,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.kenchiku_estimator.form.EstimateForm;
 import com.kenchiku_estimator.form.EstimateItemForm;
 import com.kenchiku_estimator.model.Account;
+import com.kenchiku_estimator.model.CustomUserDetails;
 import com.kenchiku_estimator.model.Estimate;
 import com.kenchiku_estimator.model.EstimateItem;
 import com.kenchiku_estimator.service.AccountService;
 import com.kenchiku_estimator.service.EstimateItemService;
 import com.kenchiku_estimator.service.EstimateService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -42,22 +47,26 @@ public class EstimateController {
   @Autowired
   ModelMapper modelMapper;
 
-  // 見積書一覧画面を表示する
+  // 担当する見積書一覧画面を表示する
+  // 管理者の場合全ての見積書の一覧画面を表示する
   // 検索条件が指定されていれば検索した見積書一覧画面を表示する
   @GetMapping
-  public String viewListEstimates(String searchWords, Model model) {
+  public String viewListEstimates(String searchWords,  @AuthenticationPrincipal CustomUserDetails principal,Model model) {
     log.info("アカウント一覧画面を表示");
-
     List<Estimate> estimates = null;
+    	  
+    boolean isAdmin = principal.getAuthorities().stream()
+		.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-    if (searchWords == null) {
-      log.debug("すべての見積書を取得");
-      estimates = estimateService.getAllEstimates();
+    estimates = estimateService.getEstimatesByUser(principal.getId(), isAdmin);
+
+    if (searchWords != null) {
+      estimates = estimateService.getSearchEstimates(principal.getId(), isAdmin, String searchWords);
     } else {
       log.debug("検索条件を用いた見積書を検索：{}", searchWords);
       estimates = estimateService.getSearchEstimates(searchWords);
     }
-
+*/
     log.info("取得された見積書の数 = {}", estimates.size());
 
     model.addAttribute("estimatesList", estimates);
