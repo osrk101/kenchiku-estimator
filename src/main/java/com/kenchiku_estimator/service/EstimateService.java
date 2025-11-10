@@ -40,7 +40,8 @@ public interface EstimateService {
 	// 見積書の削除
 	public boolean deleteEstimate(int id);
 
-	
+	// 合計金額の切り捨て計算
+	public int calculateTotalAmount(int amount);
 	
 	
 

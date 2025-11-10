@@ -1,6 +1,5 @@
 package com.kenchiku_estimator.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kenchiku_estimator.dto.EstimateTotalsDto;
 import com.kenchiku_estimator.form.EstimateForm;
 import com.kenchiku_estimator.form.EstimateItemForm;
 import com.kenchiku_estimator.model.Account;
@@ -27,6 +27,7 @@ import com.kenchiku_estimator.model.EstimateItem;
 import com.kenchiku_estimator.service.AccountService;
 import com.kenchiku_estimator.service.EstimateItemService;
 import com.kenchiku_estimator.service.EstimateService;
+import com.kenchiku_estimator.service.PriceCalculatorService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +44,9 @@ public class EstimateController {
 
   @Autowired
   private EstimateItemService estimateItemService;
+  
+  @Autowired
+  private PriceCalculatorService priceCalculatorService;
 
   @Autowired
   ModelMapper modelMapper;
@@ -74,7 +78,8 @@ public class EstimateController {
       Model model) throws Exception {
     log.info("controller 見積書詳細画面を表示");
 
-    Estimate estimate = findEstimateAndItems(id, model);
+    Estimate estimate = estimateService.getEstimateOne(id);
+    EstimateTotalsDto totals = priceCalculatorService.calculateForEstimate(estimate);
 
     if (estimate == null) {
       log.warn("指定されたIDの見積書が未存在ID = {}", id);
@@ -82,6 +87,8 @@ public class EstimateController {
       redirectAttributes.addFlashAttribute("messageType", "error");
       return "redirect:/estimates";
     }
+    model.addAttribute("estimate", estimate);
+    model.addAttribute("totals", totals);
 
     return "estimates/detail";
   }
@@ -96,6 +103,9 @@ public class EstimateController {
 
     estimateForm.getItems().add(new EstimateItemForm());
     model.addAttribute("estimateForm", estimateForm);
+    
+    EstimateTotalsDto totals = new EstimateTotalsDto();
+    model.addAttribute("totals", totals);
 
     return "estimates/create";
   }
@@ -146,6 +156,9 @@ public class EstimateController {
       redirectAttributes.addFlashAttribute("messageType", "error");
       return "redirect:/estimates";
     }
+    
+    EstimateTotalsDto totals = priceCalculatorService.calculateForEstimate(estimate);
+    model.addAttribute("totals", totals);
 
     setupEditFormForGet(estimate, estimateForm, model);
 
@@ -283,16 +296,8 @@ public class EstimateController {
     List<EstimateItem> items = estimateItemService.findByEstimateId(id);
     log.info("取得された見積書アイテム = {}", items);
 
-    // 合計金額を計算
-    BigDecimal total = BigDecimal.ZERO;
-    for (EstimateItem item : items) {
-      BigDecimal amount = item.getUnitPrice().multiply(item.getQuantity());
-      total = total.add(amount);
-    }
-
     model.addAttribute("estimate", estimate);
     model.addAttribute("estimateItems", items);
-    model.addAttribute("totalAmount", total);
 
     return estimate;
   }

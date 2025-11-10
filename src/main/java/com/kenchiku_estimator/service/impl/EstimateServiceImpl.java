@@ -178,4 +178,16 @@ public class EstimateServiceImpl implements EstimateService {
 		}
 		return true;
 	}
+	
+	// 合計金額の切り捨て計算
+	@Override
+	public int calculateTotalAmount(int amount) {
+		log.info("Service 合計金額の切り捨て計算を実行: 金額 = {}", amount);
+
+		int roundedAmount = (amount / 1000) * 1000;
+
+		log.info("Service 合計金額の切り捨て計算結果: 切り捨て後金額 = {}", roundedAmount);
+
+		return roundedAmount;
+	}
 }
