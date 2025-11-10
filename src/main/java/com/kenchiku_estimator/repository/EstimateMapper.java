@@ -15,8 +15,11 @@ public interface EstimateMapper {
   // 担当する見積書の一覧を取得
   List<Estimate> findByCreateBy(int createBy);
 
-  // 検索ワードに該当する見積書を取得
+  // 検索ワードに該当する見積書を取得(管理者)
   List<Estimate> findBySearchWords(String searchWords);
+  
+  // 検索ワードに該当する見積書を取得(担当者)
+  List<Estimate> findBySearchWordsAndCreatedBy(int createdBy, String searchWords);
 
   // IDで取得(アカウント氏名を含む)
   Estimate findById(int id);

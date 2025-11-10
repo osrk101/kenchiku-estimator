@@ -23,154 +23,159 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class EstimateServiceImpl implements EstimateService {
 
-  @Autowired
-  EstimateMapper estimateMapper;
+	@Autowired
+	EstimateMapper estimateMapper;
 
-  @Autowired
-  EstimateItemService estimateItemService;
+	@Autowired
+	EstimateItemService estimateItemService;
 
-  @Autowired
-  ModelMapper modelMapper;
+	@Autowired
+	ModelMapper modelMapper;
 
+	// 管理者ユーザーなら全見積書を取得、担当者ユーザーなら担当する見積書のみ取得
+	@Override
+	public List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin, String searchWords) {
+		log.info("Service ユーザーに応じた見積書を取得: isAdmin = {}, CreateBy = {}", isAdmin, createBy);
 
-  // 管理者なら全見積書を取得、そうでないなら担当する見積書のみ取得
-  @Override
-  public List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin) {
-	log.info("Service ユーザーに応じた見積書を取得: isAdmin = {}, CreateBy = {}", isAdmin, createBy);
-
-	if (isAdmin) {
-	  return getAllEstimates();
-	} else {
-	  return getEstimatesByCreateBy(createBy);
+		if (isAdmin) {
+			if (searchWords != null && !searchWords.isEmpty()) {
+				return getSearchEstimatesAll(searchWords);
+			} else {
+				return getAllEstimates();
+			}
+		} else if (searchWords != null && !searchWords.isEmpty()) {
+			return getSearchEstimateBycreateBy(createBy, searchWords);
+		} else {
+			return getEstimatesByCreateBy(createBy);
+		}
 	}
-  }
-  
-  //全見積書を取得
-  @Override
-  public List<Estimate> getAllEstimates() {
-	  log.info("Service 全見積書を取得");
-	  return estimateMapper.getAllEstimates();
-  }
-  
-  // 担当する見積書を取得
-  @Override
-  public List<Estimate> getEstimatesByCreateBy(int CreateBy) {
-	log.info("Service 担当する見積書を取得: {}", CreateBy);
 
-	return estimateMapper.findByCreateBy(CreateBy);
-  }
+	//全見積書を取得
+	@Override
+	public List<Estimate> getAllEstimates() {
+		log.info("Service 全見積書を取得");
+		return estimateMapper.getAllEstimates();
+	}
 
+	// 担当する見積書を取得
+	@Override
+	public List<Estimate> getEstimatesByCreateBy(int createBy) {
+		log.info("Service 担当する見積書を取得: {}", createBy);
 
-  /*// 検索ワードに該当する見積書を取得
-  @Override
-  public List<Estimate> getSearchEstimates(principal.getId(), isAdmin, String searchWords) {
-    log.info("Service 検索ワードに該当する見積書を取得: {}", searchWords);
+		return estimateMapper.findByCreateBy(createBy);
+	}
 
-    return estimateMapper.findBySearchWords(searchWords);
-  }*/
+	// 検索ワードに該当する見積書を取得（管理者
+	@Override
+	public List<Estimate> getSearchEstimatesAll(String searchWords) {
+		log.info("Service 検索ワードに該当する見積書を取得: {}", searchWords);
 
+		return estimateMapper.findBySearchWords(searchWords);
+	}
 
-  // 該当するIDの見積書を1件取得
-  @Override
-  public Estimate getEstimateOne(int estimateId) {
-    log.info("Service 該当するIDの見積書を取得");
+	// 検索ワードに該当する見積書を取得（担当者）
+	@Override
+	public List<Estimate> getSearchEstimateBycreateBy(int createBy, String searchWords) {
+		log.info("Service 検索ワードに該当する見積書を取得: {}", searchWords);
 
-    if (estimateId <= 0) {
-      return null;
-    }
+		return estimateMapper.findBySearchWordsAndCreatedBy(createBy, searchWords);
+	}
 
-    log.info("Service 見積書の取得を開始: ID = {}", estimateId);
+	// 該当するIDの見積書を1件取得
+	@Override
+	public Estimate getEstimateOne(int estimateId) {
+		log.info("Service 該当するIDの見積書を取得");
 
-    Estimate estimate = estimateMapper.findById(estimateId);
-    if (estimate == null) {
-      return null;
-    }
-    return estimate;
+		if (estimateId <= 0) {
+			return null;
+		}
 
-  }
+		log.info("Service 見積書の取得を開始: ID = {}", estimateId);
 
+		Estimate estimate = estimateMapper.findById(estimateId);
+		if (estimate == null) {
+			return null;
+		}
+		return estimate;
 
-  // 見積書番号を生成
-  @Override
-  public String generateEstimateNumber() {
-    log.info("Service 新規見積書番号を生成");
+	}
 
-    String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-    int count = estimateMapper.countByEstimateNumberPrefix(today);
-    int sequence = count + 1;
+	// 見積書番号を生成
+	@Override
+	public String generateEstimateNumber() {
+		log.info("Service 新規見積書番号を生成");
 
-    log.info("Service 見積書番号の生成に成功: {}-{}", today, String.format("%02d", sequence));
+		String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+		int count = estimateMapper.countByEstimateNumberPrefix(today);
+		int sequence = count + 1;
 
-    return today + "-" + String.format("%02d", sequence);
-  }
+		log.info("Service 見積書番号の生成に成功: {}-{}", today, String.format("%02d", sequence));
 
+		return today + "-" + String.format("%02d", sequence);
+	}
 
-  // 見積書の新規作成
-  @Override
-  public void createNewEstimate(Estimate estimate) {
-    log.info("Service 見積書の新規作成処理を実行: {}", estimate);
+	// 見積書の新規作成
+	@Override
+	public void createNewEstimate(Estimate estimate) {
+		log.info("Service 見積書の新規作成処理を実行: {}", estimate);
 
-    estimateMapper.insertEstimate(estimate);
+		estimateMapper.insertEstimate(estimate);
 
-    log.info("Service 見積書の新規作成処理に成功: {}", estimate);
-  }
+		log.info("Service 見積書の新規作成処理に成功: {}", estimate);
+	}
 
+	// 見積書の更新
+	@Override
+	public boolean updateEstimate(Estimate estimate) {
+		log.info("Service 見積書の更新処理を実行 {}", estimate);
 
-  // 見積書の更新
-  @Override
-  public boolean updateEstimate(Estimate estimate) {
-    log.info("Service 見積書の更新処理を実行 {}", estimate);
+		boolean isUpdate = estimateMapper.updateEstimate(estimate);
 
-    boolean isUpdate = estimateMapper.updateEstimate(estimate);
+		if (isUpdate) {
+			return true;
+		}
+		return false;
+	}
 
-    if (isUpdate) {
-      return true;
-    }
-    return false;
-  }
+	// 見積書と見積書アイテムを一括保存
+	@Transactional
+	public void saveEstimateWithItems(Estimate estimate, List<EstimateItemForm> itemForms,
+			boolean isNew) {
 
+		if (isNew) {
+			String estimateNumber = generateEstimateNumber();
+			estimate.setEstimateNumber(estimateNumber);
+			estimate.setId(0);
 
-  // 見積書と見積書アイテムを一括保存
-  @Transactional
-  public void saveEstimateWithItems(Estimate estimate, List<EstimateItemForm> itemForms,
-      boolean isNew) {
+			createNewEstimate(estimate);
+		} else {
+			updateEstimate(estimate);
+			estimateItemService.deleteEstimateItem(estimate.getId());
+		}
 
-    if (isNew) {
-      String estimateNumber = generateEstimateNumber();
-      estimate.setEstimateNumber(estimateNumber);
-      estimate.setId(0);
+		for (EstimateItemForm itemForm : itemForms) {
+			EstimateItem item = modelMapper.map(itemForm, EstimateItem.class);
+			item.setId(0);
+			item.setEstimateId(estimate.getId());
 
-      createNewEstimate(estimate);
-    } else {
-      updateEstimate(estimate);
-      estimateItemService.deleteEstimateItem(estimate.getId());
-    }
+			if (isNew || item.getId() == 0) {
+				estimateItemService.createEstimateItem(item);
+			} else {
+				estimateItemService.updateEstimateItem(item);
+			}
+		}
+	}
 
-    for (EstimateItemForm itemForm : itemForms) {
-      EstimateItem item = modelMapper.map(itemForm, EstimateItem.class);
-      item.setId(0);
-      item.setEstimateId(estimate.getId());
+	// 見積書の削除
+	@Override
+	public boolean deleteEstimate(int id) {
+		log.info("Service 見積書を削除処理を実行: ID = {}", id);
 
-      if (isNew || item.getId() == 0) {
-        estimateItemService.createEstimateItem(item);
-      } else {
-        estimateItemService.updateEstimateItem(item);
-      }
-    }
-  }
+		boolean isDelete = estimateMapper.deleteEstimate(id);
 
-
-  // 見積書の削除
-  @Override
-  public boolean deleteEstimate(int id) {
-    log.info("Service 見積書を削除処理を実行: ID = {}", id);
-
-    boolean isDelete = estimateMapper.deleteEstimate(id);
-
-    if (isDelete) {
-      return true;
-    }
-    return true;
-  }
-  }
-
+		if (isDelete) {
+			return true;
+		}
+		return true;
+	}
+}

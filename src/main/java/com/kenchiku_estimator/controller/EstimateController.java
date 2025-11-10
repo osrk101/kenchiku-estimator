@@ -58,15 +58,8 @@ public class EstimateController {
     boolean isAdmin = principal.getAuthorities().stream()
 		.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-    estimates = estimateService.getEstimatesByUser(principal.getId(), isAdmin);
-
-    if (searchWords != null) {
-      estimates = estimateService.getSearchEstimates(principal.getId(), isAdmin, String searchWords);
-    } else {
-      log.debug("検索条件を用いた見積書を検索：{}", searchWords);
-      estimates = estimateService.getSearchEstimates(searchWords);
-    }
-*/
+      estimates = estimateService.getEstimatesByUser(principal.getId(), isAdmin, searchWords);
+      
     log.info("取得された見積書の数 = {}", estimates.size());
 
     model.addAttribute("estimatesList", estimates);

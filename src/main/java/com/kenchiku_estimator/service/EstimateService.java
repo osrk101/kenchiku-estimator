@@ -8,16 +8,19 @@ import com.kenchiku_estimator.model.Estimate;
 public interface EstimateService {
 
 	// 管理者なら全見積書を取得、そうでないなら担当する見積書のみ取得
-	List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin);
+	List<Estimate> getEstimatesByUser(int createBy, boolean isAdmin, String searchWords);
 	
 	// 全ての見積書を取得
 	public List<Estimate> getAllEstimates();
 
 	//担当する見積書を取得
-	List<Estimate> getEstimatesByCreateBy(int CreateBy);
+	List<Estimate> getEstimatesByCreateBy(int createBy);
 
-	// 検索ワードに該当する見積書を取得
-	public List<Estimate> getSearchEstimates(int createBy, boolean isAdmin, String searchWords);
+	// 検索ワードに該当する見積書を取得(管理者用)
+	public List<Estimate> getSearchEstimatesAll(String searchWords);
+	
+	// 検索ワードに該当する見積書を取得(担当者用)
+	public List<Estimate> getSearchEstimateBycreateBy(int createBy, String searchWords);
 
 	// 該当するIDの見積書を1件取得
 	public Estimate getEstimateOne(int id);
@@ -36,6 +39,10 @@ public interface EstimateService {
 
 	// 見積書の削除
 	public boolean deleteEstimate(int id);
+
+	
+	
+	
 
 
 
