@@ -1,12 +1,16 @@
 package com.kenchiku_estimator.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.kenchiku_estimator.model.EstimateItem;
 import com.kenchiku_estimator.repository.EstimateItemMapper;
 import com.kenchiku_estimator.service.EstimateItemService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -28,14 +32,14 @@ public class EstimateItemServiceImpl implements EstimateItemService {
     }
 
     log.info("Service 見積書アイテムの取得を開始: ID = {}", id);
-    List<EstimateItem> itemList = estimateItemMapper.findByEstimateId(id);
-    if (itemList == null) {
+    List<EstimateItem> items = estimateItemMapper.findByEstimateId(id);
+    if (items == null) {
       return null;
     } else {
       log.info("見積書アイテムの取得に成功: ID = {}", id);
     }
 
-    return itemList;
+    return items;
   }
 
 
@@ -76,4 +80,16 @@ public class EstimateItemServiceImpl implements EstimateItemService {
     log.warn("Service 見積書アイテムの削除に失敗: ID = {}", id);
     return false;
   }
+  
+  // 見積書アイテムの小計を計算する
+  @Override
+  public BigDecimal calculateRowSubtotal(BigDecimal quantity, BigDecimal unitPrice) {
+	log.info("Service 見積書アイテムの小計を計算: 数量 = {}, 単価 = {}", quantity, unitPrice);
+	BigDecimal rowSubtotal = quantity.multiply(unitPrice);
+	log.info("Service 見積書アイテムの小計計算結果: 小計 = {}", rowSubtotal);
+	return rowSubtotal;
+  }
+  
+  
+  
 }

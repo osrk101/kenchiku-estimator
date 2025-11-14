@@ -18,4 +18,8 @@ public class EstimateItem {
     private BigDecimal quantity;
 
     private String unit;
+
+	public void setRowSubtotal(BigDecimal lineTotal) {
+		
+	}
 }

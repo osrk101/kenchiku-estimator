@@ -76,10 +76,13 @@
                   <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unit}" class="text-danger"></div>
                     </th:block></td>
-                  <td><input type="text" th:value="${item.unitPrice != null and item.quantity != null} ? ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT')} : ''"
-                    class="form-control js-row-total" readonly></td>
+                  <td><input type="text" class="form-control" readonly
+                    th:value="${(totals != null) and (totals.rowTotals != null) and (totals.rowTotals.size() > stat.index)
+           ? #numbers.formatDecimal(totals.rowTotals[stat.index], 1, 'COMMA', 2, 'POINT')
+           : ''}">
+                  </td>
                   <td>
-                    <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" th:onclick="'removeItem(this)'"></button>
+                    <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" onclick="'removeItem(this)'"></button>
                   </td>
                 </tr>
               </tbody>
@@ -95,13 +98,16 @@
         </div>
         <div class="col-2">
           <div>
-            <label class="form-label" th:text="#{label.total}"></label> <input type="text" id="totalAmount" class="form-control" readonly>
+            <label class="form-label .js-row-total" th:text="#{label.total}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.subtotal, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.tax}"></label> <input type="text" id="taxAmount" class="form-control" readonly>
+            <label class="form-label .js-row-total" th:text="#{label.tax}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.tax, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.totalWithTax}"></label> <input type="text" id="grandTotal" class="form-control" readonly>
+            <label class="form-label .js-row-total" th:text="#{label.totalWithTax}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.total, 1, 'COMMA') : ''}">
           </div>
         </div>
       </div>
@@ -111,7 +117,12 @@
         <div class="col-2">
           <button type="button" class="btn btn-secondary" onclick="addItem()" th:text="#{button.addItem}"></button>
         </div>
+        <div class="col-2">
+          <button type="button" class="btn btn-secondary" onclick="calculateRowTotal()" th:text="#{button.}"></button>
+        </div>
       </div>
+
+
       <!-- グローバルエラー -->
       <div class=" row">
         <div class="col-4">
@@ -155,7 +166,7 @@
 				const newRow = tempDiv.querySelector("tr");
 
 				tbody.appendChild(newRow);
-				calculateTotal(); //行追加後に再計算
+				calculateRowTotal(); //行追加後に再計算
 			}
 			// 内訳行の削除
 			function removeItem(button) {
@@ -163,11 +174,11 @@
 				if (row) {
 					row.remove();
 				}
-				calculateTotal(); //行削除後に再計算
+				calculateRowTotal(); //行削除後に再計算
 			}
 			// 合計金額の計算
 
-			function calculateTotal() {
+			function calculateRowTotal() {
 				const items = document.querySelectorAll("#items tbody tr");
 				let subtotal = 0;
 
@@ -177,18 +188,10 @@
 					const rowTotal = unitPrice * quantity;
 					// 行ごとの合計を表示
 					const rowTotalInput = item.querySelector(".js-row-total");
-					rowTotalInput.value = rowTotal.toFixed(2);
-					subtotal += rowTotal;
+					if (rowTotalInput) {
+	                    rowTotalInput.value = rowTotal.toFixed(2);
+	                }
 				});
-
-				const tax = subtotal * 0.1; // 10%の消費税
-				const total = subtotal + tax;
-
-				document.getElementById("totalAmount").value = subtotal.toFixed(2);
-				document.getElementById("taxAmount").value = tax.toFixed(2);
-				// 小数点以下切り捨てで表示
-				const totalFloor = Math.floor(total);
-				document.getElementById("grandTotal").value = totalFloor.toLocaleString('ja-JP');
 			}
 			document.addEventListener("DOMContentLoaded", function () {
 				const itemsDiv = document.getElementById("items");

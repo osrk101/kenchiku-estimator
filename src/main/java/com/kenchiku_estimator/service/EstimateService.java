@@ -39,9 +39,9 @@ public interface EstimateService {
 
 	// 見積書の削除
 	public boolean deleteEstimate(int id);
-
-	// 合計金額の切り捨て計算
-	public int calculateTotalAmount(int amount);
+	
+	//行小計、全体の小計、税率、合計の計算
+	public Estimate calculateForEstimate(Estimate estimate);
 	
 	
 

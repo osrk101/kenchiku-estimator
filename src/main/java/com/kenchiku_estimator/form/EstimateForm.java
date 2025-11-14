@@ -1,5 +1,6 @@
 package com.kenchiku_estimator.form;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,5 +33,11 @@ public class EstimateForm {
     @Valid
     @NotEmpty(message = "見積項目を1つ以上追加してください")
     private List<EstimateItemForm> items = new ArrayList<>();
+    
+    private BigDecimal subtotal;
+    
+    private BigDecimal tax;
+    
+    private BigDecimal total;
 
 }

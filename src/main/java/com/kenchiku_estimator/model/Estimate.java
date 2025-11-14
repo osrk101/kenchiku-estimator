@@ -1,7 +1,9 @@
 package com.kenchiku_estimator.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -21,5 +23,11 @@ public class Estimate {
 
   private String fullName;
 
-  private List<EstimateItem> items;
+  public List<EstimateItem> items;
+  
+  public BigDecimal subtotal;
+  
+  public BigDecimal tax;
+  
+  public BigDecimal total;
 }

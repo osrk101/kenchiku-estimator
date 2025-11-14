@@ -1,5 +1,7 @@
 package com.kenchiku_estimator.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -177,17 +179,43 @@ public class EstimateServiceImpl implements EstimateService {
 			return true;
 		}
 		return true;
-	}
+	}	
 	
-	// 合計金額の切り捨て計算
+	// 合計金額を計算して小数点以下を切り捨て
 	@Override
-	public int calculateTotalAmount(int amount) {
-		log.info("Service 合計金額の切り捨て計算を実行: 金額 = {}", amount);
+	public Estimate calculateForEstimate(Estimate estimate) {
 
-		int roundedAmount = (amount / 1000) * 1000;
+		log.info("Service 合計金額計算処理を実行");
+		BigDecimal amount = BigDecimal.ZERO;
+		BigDecimal taxRate = new BigDecimal("1.10"); // 税率10%
+		BigDecimal tax = BigDecimal.ZERO;
+		BigDecimal totalAmountWithTax = BigDecimal.ZERO;
+		
+		// 行小計の計算
+		for (EstimateItem item : estimate.getItems()) {
+			BigDecimal quantity = item.getQuantity();
+			BigDecimal unitPrice = item.getUnitPrice();
+			BigDecimal lineTotal = unitPrice.multiply(quantity);
+			item.setRowSubtotal(lineTotal);
+			
+			// 小計に行小計を加算
+			amount = amount.add(lineTotal);
+		}
+		
+		tax = amount.multiply(new BigDecimal("0.10"));
+		totalAmountWithTax = amount.multiply(taxRate);
+		
+		// 小数点以下を切り捨て
+		BigDecimal totalAmountWithTaxRunded = totalAmountWithTax.setScale(0, RoundingMode.DOWN);
 
-		log.info("Service 合計金額の切り捨て計算結果: 切り捨て後金額 = {}", roundedAmount);
-
-		return roundedAmount;
+		log.info("Service 合計金額計算結果: 税抜金額 = {}", amount);
+		log.info("Service 合計金額計算結果: 税率 = {}", taxRate);
+		log.info("Service 合計金額計算結果: 税込金額 = {}", totalAmountWithTaxRunded);
+		estimate.setSubtotal(amount);
+		estimate.setTax(tax);
+		estimate.setTotal(totalAmountWithTaxRunded);
+		
+		return estimate;
 	}
+
 }

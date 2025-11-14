@@ -95,13 +95,16 @@
         </div>
         <div class="col-2">
           <div>
-            <label class="form-label" th:text="#{label.total}"></label> <input type="text" id="totalAmount" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.total}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.subtotal, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.tax}"></label> <input type="text" id="taxAmount" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.tax}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.tax, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.totalWithTax}"></label> <input type="text" id="grandTotal" class="form-control" readonly>
+            <label class="form-label" th:text="#{label.totalWithTax}"></label> <input type="text" class="form-control" readonly
+              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.total, 1, 'COMMA') : ''}">
           </div>
         </div>
       </div>
@@ -157,7 +160,7 @@
 				const newRow = tempDiv.querySelector("tr");
 
 				tbody.appendChild(newRow);
-				calculateTotal(); //行追加後に再計算
+				calculateRowTotal(); //行追加後に再計算
 			}
 			// 内訳行の削除
 			function removeItem(button) {
@@ -167,8 +170,8 @@
 				}
 				calculateTotal(); //行削除後に再計算
 			}
-			// 合計金額の計算
-			function calculateTotal() {
+			// 行ごとの小計の計算
+			function calculateRowTotal() {
 				const items = document.querySelectorAll("#items tbody tr");
 				let subtotal = 0;
 
@@ -176,24 +179,17 @@
 					const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
 					const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
 				   const rowTotal = unitPrice * quantity;
-					// 行ごとの合計を表示
+				// 行ごとの合計を表示
 					const rowTotalInput = item.querySelector(".js-row-total");
-					subtotal += rowTotal;
+				if (rowTotalInput) {
+                    rowTotalInput.value = rowTotal.toFixed(2);
+                }
 				});
 
-				const tax = subtotal * 0.1; // 10%の消費税
-				const total = subtotal + tax;
-
-				document.getElementById("totalAmount").value = subtotal.toFixed(2);
-				document.getElementById("taxAmount").value = tax.toFixed(2);
-				// 小数点以下切り捨て、3桁カンマ区切りで表示
-				const totalFloor = Math.floor(total);
-				document.getElementById("grandTotal").value = totalFloor.toLocaleString('ja-JP');
-			}
 			document.addEventListener("DOMContentLoaded", function () {
 				const itemsDiv = document.getElementById("items");
 				itemsDiv.addEventListener("input", calculateTotal);
-				calculateTotal(); // 初期計算
+				calculateRowTotal(); // 初期計算
 			});
 
 			// フォーム送信前に内訳のインデックスを再設定

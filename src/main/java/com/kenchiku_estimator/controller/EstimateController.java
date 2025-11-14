@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kenchiku_estimator.dto.EstimateTotalsDto;
 import com.kenchiku_estimator.form.EstimateForm;
 import com.kenchiku_estimator.form.EstimateItemForm;
 import com.kenchiku_estimator.model.Account;
@@ -27,7 +26,6 @@ import com.kenchiku_estimator.model.EstimateItem;
 import com.kenchiku_estimator.service.AccountService;
 import com.kenchiku_estimator.service.EstimateItemService;
 import com.kenchiku_estimator.service.EstimateService;
-import com.kenchiku_estimator.service.PriceCalculatorService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,317 +34,318 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/estimates")
 public class EstimateController {
 
-  @Autowired
-  private EstimateService estimateService;
-
-  @Autowired
-  private AccountService accountService;
-
-  @Autowired
-  private EstimateItemService estimateItemService;
-  
-  @Autowired
-  private PriceCalculatorService priceCalculatorService;
-
-  @Autowired
-  ModelMapper modelMapper;
-
-  // 担当する見積書一覧画面を表示する
-  // 管理者の場合全ての見積書の一覧画面を表示する
-  // 検索条件が指定されていれば検索した見積書一覧画面を表示する
-  @GetMapping
-  public String viewListEstimates(String searchWords,  @AuthenticationPrincipal CustomUserDetails principal,Model model) {
-    log.info("アカウント一覧画面を表示");
-    List<Estimate> estimates = null;
-    	  
-    boolean isAdmin = principal.getAuthorities().stream()
-		.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-      estimates = estimateService.getEstimatesByUser(principal.getId(), isAdmin, searchWords);
-      
-    log.info("取得された見積書の数 = {}", estimates.size());
-
-    model.addAttribute("estimatesList", estimates);
-    model.addAttribute("searchWords", searchWords);
-
-    return "estimates";
-  }
-
-  // 見積書の詳細画面を表示する
-  @GetMapping("/detail/{id}")
-  public String viewEstimateDetail(@PathVariable int id, RedirectAttributes redirectAttributes,
-      Model model) throws Exception {
-    log.info("controller 見積書詳細画面を表示");
-
-    Estimate estimate = estimateService.getEstimateOne(id);
-    EstimateTotalsDto totals = priceCalculatorService.calculateForEstimate(estimate);
-
-    if (estimate == null) {
-      log.warn("指定されたIDの見積書が未存在ID = {}", id);
-      redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
-      redirectAttributes.addFlashAttribute("messageType", "error");
-      return "redirect:/estimates";
-    }
-    model.addAttribute("estimate", estimate);
-    model.addAttribute("totals", totals);
-
-    return "estimates/detail";
-  }
-
-  // 見積書の新規作成画面を表示する
-  @GetMapping("/create")
-  public String viewCreateEstimateForm(EstimateForm estimateForm, Account mAccount, Model model) {
-    log.info("controller 見積書新規作成画面を表示");
-
-    List<Account> fullNameList = accountService.getAllAccountsFullname();
-    model.addAttribute("fullNameList", fullNameList);
-
-    estimateForm.getItems().add(new EstimateItemForm());
-    model.addAttribute("estimateForm", estimateForm);
-    
-    EstimateTotalsDto totals = new EstimateTotalsDto();
-    model.addAttribute("totals", totals);
-
-    return "estimates/create";
-  }
-
-  // 新規見積書の作成をする
-  @PostMapping("/create")
-  public String createNewEstimate(@Validated EstimateForm estimateForm, BindingResult bindingResult,
-      Model model, RedirectAttributes redirectAttributes) throws Exception {
-    log.info("controller 新規見積書の作成作業を開始");
+	@Autowired
+	private EstimateService estimateService;
 
-    removeEmptyItems(estimateForm); // 空欄行を削除
+	@Autowired
+	private AccountService accountService;
 
-    if (!bindingResult.hasFieldErrors("items")
-        && (estimateForm.getItems() == null || estimateForm.getItems().isEmpty())) {
-      bindingResult.rejectValue("items", "message.emptyBreakdown", "見積項目を1つ以上追加してください");
-    }
+	@Autowired
+	private EstimateItemService estimateItemService;
 
-    if (bindingResult.hasErrors()) {
-      log.warn("見積書の入力内容にエラー: {}", bindingResult.getAllErrors());
+	@Autowired
+	ModelMapper modelMapper;
 
-      List<Account> fullNameList = accountService.getAllAccountsFullname();
-      model.addAttribute("fullNameList", fullNameList);
+	// 担当する見積書一覧画面を表示する
+	// 管理者の場合全ての見積書の一覧画面を表示する
+	// 検索条件が指定されていれば検索した見積書一覧画面を表示する
+	@GetMapping
+	public String viewListEstimates(String searchWords, @AuthenticationPrincipal CustomUserDetails principal,
+			Model model) {
+		log.info("アカウント一覧画面を表示");
+		List<Estimate> estimates = null;
 
-      return "estimates/create";
-    }
+		boolean isAdmin = principal.getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-    Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
-    estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
+		estimates = estimateService.getEstimatesByUser(principal.getId(), isAdmin, searchWords);
 
-    log.info("新規見積書の作成が完了 ID = {}", estimate.getId());
+		log.info("取得された見積書の数 = {}", estimates.size());
 
-    redirectAttributes.addFlashAttribute("message", "見積書を作成しました。");
-    redirectAttributes.addFlashAttribute("messageType", "success");
+		model.addAttribute("estimatesList", estimates);
+		model.addAttribute("searchWords", searchWords);
 
-    return "redirect:/estimates";
-  }
+		return "estimates";
+	}
 
-  // 既存見積書の編集画面を表示する
-  @GetMapping("/edit/{id}")
-  public String viewEditEstimateForm(@PathVariable int id, EstimateForm estimateForm,
-      RedirectAttributes redirectAttributes, Model model) throws Exception {
-    log.info("controller 見積書編集画面を表示");
+	// 見積書の詳細画面を表示する
+	@GetMapping("/detail/{id}")
+	public String viewEstimateDetail(@PathVariable int id, RedirectAttributes redirectAttributes,
+			Model model) throws Exception {
+		log.info("controller 見積書詳細画面を表示");
+
+		Estimate estimate = estimateService.getEstimateOne(id);
+		if (estimate == null) {
+			log.warn("指定されたIDの見積書が未存在ID = {}", id);
+			redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
+			redirectAttributes.addFlashAttribute("messageType", "error");
+			return "redirect:/estimates";
+		}
+		
+		List<EstimateItem> items= estimateItemService.findByEstimateId(id);
+		estimate.setItems(items);
+		estimate = estimateService.calculateForEstimate(estimate);
 
-    Estimate estimate = findEstimateAndItems(id, model);
+		model.addAttribute("estimateItems", items);
+		model.addAttribute("estimate", estimate);
 
-    if (estimate == null) {
-      redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
-      redirectAttributes.addFlashAttribute("messageType", "error");
-      return "redirect:/estimates";
-    }
-    
-    EstimateTotalsDto totals = priceCalculatorService.calculateForEstimate(estimate);
-    model.addAttribute("totals", totals);
+		return "estimates/detail";
+	}
 
-    setupEditFormForGet(estimate, estimateForm, model);
+	// 見積書の新規作成画面を表示する
+	@GetMapping("/create")
+	public String viewCreateEstimateForm(EstimateForm estimateForm, Account mAccount, Model model) {
+		log.info("controller 見積書新規作成画面を表示");
 
-    return "estimates/edit";
-  }
+		List<Account> fullNameList = accountService.getAllAccountsFullname();
+		model.addAttribute("fullNameList", fullNameList);
 
-  // 既存見積書の更新をする
-  @PostMapping("/edit/{id}")
-  public String updateEstimate(@PathVariable int id, @Validated EstimateForm estimateForm,
-      BindingResult bindingResult, @RequestParam String action, Model model,
-      RedirectAttributes redirectAttributes) throws Exception {
-    if (bindingResult.hasErrors()) {
-      log.error("見積書の入力内容にエラー: {}", bindingResult.getAllErrors());
-      populateChoices(model, estimateForm);
-      return "estimates/edit";
-    }
+		estimateForm.getItems().add(new EstimateItemForm());
+		model.addAttribute("estimateForm", estimateForm);
 
-    if ("update".equals(action)) {
-      log.info("controller 既存見積書の更新処理を開始");
+		return "estimates/create";
+	}
 
-      try {
-        Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
-        estimate.setId(id);
+	// 新規見積書の作成をする
+	@PostMapping("/create")
+	public String createNewEstimate(@Validated EstimateForm estimateForm, BindingResult bindingResult,
+			Model model, RedirectAttributes redirectAttributes) throws Exception {
+		log.info("controller 新規見積書の作成作業を開始");
 
-        estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), false);
+		removeEmptyItems(estimateForm); // 空欄行を削除
 
-        log.info("見積書の更新が完了。見積書一覧へリダイレクト");
+		if (!bindingResult.hasFieldErrors("items")
+				&& (estimateForm.getItems() == null || estimateForm.getItems().isEmpty())) {
+			bindingResult.rejectValue("items", "message.emptyBreakdown", "見積項目を1つ以上追加してください");
+		}
 
-        redirectAttributes.addFlashAttribute("message", "見積書を更新しました。");
-        redirectAttributes.addFlashAttribute("messageType", "success");
+		if (bindingResult.hasErrors()) {
+			log.warn("見積書の入力内容にエラー: {}", bindingResult.getAllErrors());
 
-        return "redirect:/estimates";
+			List<Account> fullNameList = accountService.getAllAccountsFullname();
+			model.addAttribute("fullNameList", fullNameList);
 
-      } catch (Exception e) {
-        log.error("見積書の更新に失敗: {}", e.getMessage());
+			return "estimates/create";
+		}
 
-        List<Account> fullNameList = accountService.getAllAccountsFullname();
-        model.addAttribute("fullNameList", fullNameList);
+		Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
+		estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
 
-        bindingResult.reject("error.update", "見積書の更新に失敗");
-      }
+		log.info("新規見積書の作成が完了 ID = {}", estimate.getId());
 
-      return "estimates/edit";
+		redirectAttributes.addFlashAttribute("message", "見積書を作成しました。");
+		redirectAttributes.addFlashAttribute("messageType", "success");
 
-      // 別件で保存をする
-    } else if ("saveAsNew".equals(action)) {
-      log.info("controller 別件で保存の処理を開始");
+		return "redirect:/estimates";
+	}
 
-      try {
-        Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
-        estimate.setId(0); // 新規作成のためIDをリセット
+	// 既存見積書の編集画面を表示する
+	@GetMapping("/edit/{id}")
+	public String viewEditEstimateForm(@PathVariable int id, EstimateForm estimateForm,
+			RedirectAttributes redirectAttributes, Model model) throws Exception {
+		log.info("controller 見積書編集画面を表示");
 
-        estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
+		Estimate estimate = findEstimateAndItems(id, model);
 
-        log.info("新規見積書の作成が完了。見積書一覧へリダイレクト");
+		if (estimate == null) {
+			redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
+			redirectAttributes.addFlashAttribute("messageType", "error");
+			return "redirect:/estimates";
+		}
+		List<EstimateItem> items= estimateItemService.findByEstimateId(id);
+		estimate.setItems(items);
+		estimate = estimateService.calculateForEstimate(estimate);
 
-        redirectAttributes.addFlashAttribute("message", "別件で見積書を作成しました。");
-        redirectAttributes.addFlashAttribute("messageType", "success");
+		model.addAttribute("estimate", estimate);
+		model.addAttribute("estimateItems", estimate.items);
 
-        return "redirect:/estimates";
+		setupEditFormForGet(estimate, estimateForm, model);
 
-      } catch (Exception e) {
-        log.error("別件での見積書保存に失敗: {}", e.getMessage());
+		return "estimates/edit";
+	}
 
-        bindingResult.reject("error.saveAsNew", "別件での見積書保存に失敗。");
-      }
-    }
+	// 既存見積書の更新をする
+	@PostMapping("/edit/{id}")
+	public String updateEstimate(@PathVariable int id, @Validated EstimateForm estimateForm,
+			BindingResult bindingResult, @RequestParam String action, Model model,
+			RedirectAttributes redirectAttributes) throws Exception {
+		if (bindingResult.hasErrors()) {
+			log.error("見積書の入力内容にエラー: {}", bindingResult.getAllErrors());
+			populateChoices(model, estimateForm);
+			return "estimates/edit";
+		}
 
-    return "estimates/edit";
-  }
+		if ("update".equals(action)) {
+			log.info("controller 既存見積書の更新処理を開始");
 
-  // 見積書削除の確認画面を表示
-  @GetMapping("/confirmDelete/{id}")
-  public String viewDeleteEstimateConfirm(@PathVariable int id,
-      RedirectAttributes redirectAttributes, Model model) throws Exception {
-    log.info("controller 見積書削除確認画面を表示");
+			try {
+				Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
+				estimate.setId(id);
 
-    Estimate estimate = findEstimateAndItems(id, model);
+				estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), false);
 
-    if (estimate == null) {
-      redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
-      redirectAttributes.addFlashAttribute("messageType", "error");
-      return "redirect:/estimates";
-    }
+				log.info("見積書の更新が完了。見積書一覧へリダイレクト");
 
-    model.addAttribute("estimate", estimate);
+				redirectAttributes.addFlashAttribute("message", "見積書を更新しました。");
+				redirectAttributes.addFlashAttribute("messageType", "success");
 
-    return "estimates/confirmDelete";
-  }
+				return "redirect:/estimates";
 
-  // 見積書の削除処理
-  @PostMapping("/delete/{id}")
-  public String deleteEstimate(@PathVariable int id, RedirectAttributes redirectAttributes) {
-    log.info("controller 見積書削除処理を開始");
+			} catch (Exception e) {
+				log.error("見積書の更新に失敗: {}", e.getMessage());
 
-    try {
-      estimateService.getEstimateOne(id); // 存在確認
+				List<Account> fullNameList = accountService.getAllAccountsFullname();
+				model.addAttribute("fullNameList", fullNameList);
 
-      Boolean isDelatedEstimateItem = estimateItemService.deleteEstimateItem(id); // アイテム削除
-      Boolean isDelatedEstimate = estimateService.deleteEstimate(id); // 見積書削除
+				bindingResult.reject("error.update", "見積書の更新に失敗");
+			}
 
-      if (!isDelatedEstimateItem || !isDelatedEstimate) {
-        redirectAttributes.addFlashAttribute("message", "見積書の削除に失敗しました。");
-        redirectAttributes.addFlashAttribute("messageType", "error");
-        return "redirect:/estimates";
-      }
+			return "estimates/edit";
 
-      log.info("見積書（ID: {}）を削除", id);
+			// 別件で保存をする
+		} else if ("saveAsNew".equals(action)) {
+			log.info("controller 別件で保存の処理を開始");
 
-      redirectAttributes.addFlashAttribute("message", "見積書を削除しました。");
-      redirectAttributes.addFlashAttribute("messageType", "success");
+			try {
+				Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
+				estimate.setId(0); // 新規作成のためIDをリセット
 
-    } catch (DataAccessException e) {
-      log.error("見積書の削除に失敗: {}", e.getMessage());
+				estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
 
-      redirectAttributes.addFlashAttribute("message", "見積書の削除に失敗しました。");
-      redirectAttributes.addFlashAttribute("messageType", "error");
-    }
+				log.info("新規見積書の作成が完了。見積書一覧へリダイレクト");
 
-    return "redirect:/estimates";
-  }
+				redirectAttributes.addFlashAttribute("message", "別件で見積書を作成しました。");
+				redirectAttributes.addFlashAttribute("messageType", "success");
 
-  // --------------------- 以下、共通メソッド ---------------------
+				return "redirect:/estimates";
 
-  // 指定されたIDの見積書と見積書アイテムを取得する
-  public Estimate findEstimateAndItems(int id, Model model) throws Exception {
-    Estimate estimate = estimateService.getEstimateOne(id);
+			} catch (Exception e) {
+				log.error("別件での見積書保存に失敗: {}", e.getMessage());
 
-    if (estimate == null) {
-      return estimate;
-    }
+				bindingResult.reject("error.saveAsNew", "別件での見積書保存に失敗。");
+			}
+		}
 
-    log.info("取得された見積書 = {}", estimate);
+		return "estimates/edit";
+	}
 
-    List<EstimateItem> items = estimateItemService.findByEstimateId(id);
-    log.info("取得された見積書アイテム = {}", items);
+	// 見積書削除の確認画面を表示
+	@GetMapping("/confirmDelete/{id}")
+	public String viewDeleteEstimateConfirm(@PathVariable int id,
+			RedirectAttributes redirectAttributes, Model model) throws Exception {
+		log.info("controller 見積書削除確認画面を表示");
 
-    model.addAttribute("estimate", estimate);
-    model.addAttribute("estimateItems", items);
+		Estimate estimate = findEstimateAndItems(id, model);
 
-    return estimate;
-  }
+		if (estimate == null) {
+			redirectAttributes.addFlashAttribute("message", "指定されたIDの見積書は存在しません。");
+			redirectAttributes.addFlashAttribute("messageType", "error");
+			return "redirect:/estimates";
+		}
 
-  // EstimateFormをセットアップする
-  public void setupEditForm(Estimate estimate, EstimateForm estimateForm, Model model) {
-    modelMapper.map(estimate, estimateForm);
-    model.addAttribute("estimateForm", estimateForm);
-  }
+		model.addAttribute("estimate", estimate);
 
-  // EstimateItemFormをセットアップする
-  public void setupEstimateItemForm(EstimateItem item, EstimateItemForm estimateItemForm,
-      Model model) {
-    modelMapper.map(item, estimateItemForm);
-    model.addAttribute("estimateItemForm", estimateItemForm);
-  }
+		return "estimates/confirmDelete";
+	}
 
-  // 担当者リストの選択肢をセットアップする
-  private void populateChoices(Model model, EstimateForm estimateForm) {
-    model.addAttribute("fullNameList", accountService.getAllAccountsFullname());
-    model.addAttribute("selectedAccountId", estimateForm.getCreatedBy());
-  }
+	// 見積書の削除処理
+	@PostMapping("/delete/{id}")
+	public String deleteEstimate(@PathVariable int id, RedirectAttributes redirectAttributes) {
+		log.info("controller 見積書削除処理を開始");
 
-  // 編集画面GET 初回表示専用（ここだけフォームを上書き＆addAttribute）
-  private void setupEditFormForGet(Estimate estimate, EstimateForm estimateForm, Model model) {
-    modelMapper.map(estimate, estimateForm);
+		try {
+			estimateService.getEstimateOne(id); // 存在確認
 
-    List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(estimate.getId());
-    List<EstimateItemForm> itemForms = estimateItems.stream().map(item -> {
-      EstimateItemForm f = new EstimateItemForm();
-      f.setId(item.getId());
-      f.setEstimateId(item.getEstimateId());
-      f.setItemName(item.getItemName());
-      f.setUnitPrice(item.getUnitPrice());
-      f.setQuantity(item.getQuantity());
-      f.setUnit(item.getUnit());
-      return f;
-    }).toList();
-    estimateForm.setItems(itemForms);
+			Boolean isDelatedEstimateItem = estimateItemService.deleteEstimateItem(id); // アイテム削除
+			Boolean isDelatedEstimate = estimateService.deleteEstimate(id); // 見積書削除
 
-    model.addAttribute("estimateForm", estimateForm);
-    populateChoices(model, estimateForm);
-  }
+			if (!isDelatedEstimateItem || !isDelatedEstimate) {
+				redirectAttributes.addFlashAttribute("message", "見積書の削除に失敗しました。");
+				redirectAttributes.addFlashAttribute("messageType", "error");
+				return "redirect:/estimates";
+			}
 
-  // 内訳の空欄行を削除する
-  public void removeEmptyItems(EstimateForm estimateForm) {
-    List<EstimateItemForm> items = estimateForm.getItems();
-    items.removeIf(item -> item.getItemName() == null
-        || item.getItemName().isBlank() && (item.getUnitPrice() == null)
-            && (item.getQuantity() == null) && (item.getUnit() == null));
-  }
+			log.info("見積書（ID: {}）を削除", id);
+
+			redirectAttributes.addFlashAttribute("message", "見積書を削除しました。");
+			redirectAttributes.addFlashAttribute("messageType", "success");
+
+		} catch (DataAccessException e) {
+			log.error("見積書の削除に失敗: {}", e.getMessage());
+
+			redirectAttributes.addFlashAttribute("message", "見積書の削除に失敗しました。");
+			redirectAttributes.addFlashAttribute("messageType", "error");
+		}
+
+		return "redirect:/estimates";
+	}
+
+	// --------------------- 以下、共通メソッド ---------------------
+
+	// 指定されたIDの見積書と見積書アイテムを取得する
+	public Estimate findEstimateAndItems(int id, Model model) throws Exception {
+		Estimate estimate = estimateService.getEstimateOne(id);
+
+		if (estimate == null) {
+			return estimate;
+		}
+
+		log.info("取得された見積書 = {}", estimate);
+
+		List<EstimateItem> items = estimateItemService.findByEstimateId(id);
+		log.info("取得された見積書アイテム = {}", items);
+
+		model.addAttribute("estimate", estimate);
+		model.addAttribute("estimateItems", items);
+
+		return estimate;
+	}
+
+	// EstimateFormをセットアップする
+	public void setupEditForm(Estimate estimate, EstimateForm estimateForm, Model model) {
+		modelMapper.map(estimate, estimateForm);
+		model.addAttribute("estimateForm", estimateForm);
+	}
+
+	// EstimateItemFormをセットアップする
+	public void setupEstimateItemForm(EstimateItem item, EstimateItemForm estimateItemForm,
+			Model model) {
+		modelMapper.map(item, estimateItemForm);
+		model.addAttribute("estimateItemForm", estimateItemForm);
+	}
+
+	// 担当者リストの選択肢をセットアップする
+	private void populateChoices(Model model, EstimateForm estimateForm) {
+		model.addAttribute("fullNameList", accountService.getAllAccountsFullname());
+		model.addAttribute("selectedAccountId", estimateForm.getCreatedBy());
+	}
+
+	// 編集画面GET 初回表示専用（ここだけフォームを上書き＆addAttribute）
+	private void setupEditFormForGet(Estimate estimate, EstimateForm estimateForm, Model model) {
+		modelMapper.map(estimate, estimateForm);
+
+		List<EstimateItem> estimateItems = estimateItemService.findByEstimateId(estimate.getId());
+		List<EstimateItemForm> itemForms = estimateItems.stream().map(item -> {
+			EstimateItemForm f = new EstimateItemForm();
+			f.setId(item.getId());
+			f.setEstimateId(item.getEstimateId());
+			f.setItemName(item.getItemName());
+			f.setUnitPrice(item.getUnitPrice());
+			f.setQuantity(item.getQuantity());
+			f.setUnit(item.getUnit());
+			return f;
+		}).toList();
+		estimateForm.setItems(itemForms);
+
+		model.addAttribute("estimateForm", estimateForm);
+		populateChoices(model, estimateForm);
+	}
+
+	// 内訳の空欄行を削除する
+	public void removeEmptyItems(EstimateForm estimateForm) {
+		List<EstimateItemForm> items = estimateForm.getItems();
+		items.removeIf(item -> item.getItemName() == null
+				|| item.getItemName().isBlank() && (item.getUnitPrice() == null)
+						&& (item.getQuantity() == null) && (item.getUnit() == null));
+	}
 }

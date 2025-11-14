@@ -1,6 +1,8 @@
 package com.kenchiku_estimator.service;
 
+import java.math.BigDecimal;
 import java.util.List;
+
 import com.kenchiku_estimator.model.EstimateItem;
 
 public interface EstimateItemService {
@@ -16,4 +18,8 @@ public interface EstimateItemService {
 
   // 見積書アイテムの更新をする
   public boolean updateEstimateItem(EstimateItem item);
+  
+  //　見積書アイテムの行小計を計算する
+  public BigDecimal calculateRowSubtotal(BigDecimal unitPrice, BigDecimal quantity);
+  
 }

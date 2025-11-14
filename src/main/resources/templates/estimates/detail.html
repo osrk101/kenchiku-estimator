@@ -33,15 +33,15 @@
         <div class="row mb-2">
           <div class="col-md-4 text-center">
             <label class="form-label" th:text="#{label.subtotal}"></label>
-            <p class="form-control-plaintext fw-bold fs-5" th:text="${#numbers.formatDecimal(totals.subtotal, 0, 'COMMA', 2, 'POINT')} + ' 円'"></p>
+            <p class="form-control-plaintext fw-bold fs-5" th:text="${#numbers.formatInteger(estimate.subtotal, 0, 'COMMA')} + ' 円'"></p>
           </div>
           <div class="col-md-4 text-center">
             <label class=" form-label" th:text="#{label.tax}"></label>
-            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatDecimal(totals.tax, 0, 'COMMA', 2, 'POINT')} + ' 円'"></p>
+            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(estimate.tax, 0, 'COMMA')} + ' 円'"></p>
           </div>
           <div class="col-md-4 text-center">
             <label class="form-label" th:text="#{label.totalWithTax}"></label>
-            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(totals.total, 0, 'COMMA')} + ' 円'"></p>
+            <p class="form-control-plaintext fw-bold fs-5 text-danger" th:text="${#numbers.formatInteger(estimate.total, 0, 'COMMA')} + ' 円'"></p>
           </div>
         </div>
       </div>
