@@ -2,11 +2,12 @@ package com.kenchiku_estimator.form;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -23,15 +24,17 @@ public class EstimateItemForm {
     @NotNull(message = "単価は必須です")
     @DecimalMin(value = "0.0", inclusive = true, message = "単価は0以上の値を入力してください")
     @Digits(integer = 8, fraction = 2, message = "単価は整数8桁、小数2桁以内で入力してください")
-    private BigDecimal unitPrice;
+    public BigDecimal unitPrice;
 
     @NotNull(message = "数量は必須です")
     @DecimalMin(value = "0.0", inclusive = true, message = "数量は0以上の値を入力してください")
     @Digits(integer = 8, fraction = 2, message = "数量は整数8桁、小数2桁以内で入力してください")
-    private BigDecimal quantity;
+    public BigDecimal quantity;
 
     @NotBlank(message = "単位は必須です")
     @Size(max = 20, message = "単位は20文字以内で入力してください")
     private String unit;
+    
+    public BigDecimal rowSubtotal;
 
 }

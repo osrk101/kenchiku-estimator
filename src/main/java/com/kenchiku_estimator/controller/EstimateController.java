@@ -1,5 +1,6 @@
 package com.kenchiku_estimator.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -81,13 +82,13 @@ public class EstimateController {
 			redirectAttributes.addFlashAttribute("messageType", "error");
 			return "redirect:/estimates";
 		}
-		
-		List<EstimateItem> items= estimateItemService.findByEstimateId(id);
+
+		List<EstimateItem> items = estimateItemService.findByEstimateId(id);
 		estimate.setItems(items);
 		estimate = estimateService.calculateForEstimate(estimate);
-
-		model.addAttribute("estimateItems", items);
+		
 		model.addAttribute("estimate", estimate);
+		model.addAttribute("estimateItems", estimate.items);
 
 		return "estimates/detail";
 	}
@@ -100,7 +101,12 @@ public class EstimateController {
 		List<Account> fullNameList = accountService.getAllAccountsFullname();
 		model.addAttribute("fullNameList", fullNameList);
 
+		//フォームの初期設定
+		estimateForm.setCreatedBy(mAccount.getId());
 		estimateForm.getItems().add(new EstimateItemForm());
+		estimateForm.setSubtotal(BigDecimal.ZERO);
+		estimateForm.setTax(BigDecimal.ZERO);
+		estimateForm.setTotal(BigDecimal.ZERO);
 		model.addAttribute("estimateForm", estimateForm);
 
 		return "estimates/create";
@@ -129,6 +135,8 @@ public class EstimateController {
 		}
 
 		Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
+		// 小計、税、合計を再計算
+		estimate = estimateService.calculateForEstimate(estimate);
 		estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
 
 		log.info("新規見積書の作成が完了 ID = {}", estimate.getId());
@@ -152,7 +160,7 @@ public class EstimateController {
 			redirectAttributes.addFlashAttribute("messageType", "error");
 			return "redirect:/estimates";
 		}
-		List<EstimateItem> items= estimateItemService.findByEstimateId(id);
+		List<EstimateItem> items = estimateItemService.findByEstimateId(id);
 		estimate.setItems(items);
 		estimate = estimateService.calculateForEstimate(estimate);
 
@@ -181,7 +189,8 @@ public class EstimateController {
 			try {
 				Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
 				estimate.setId(id);
-
+				// 小計、税、合計を再計算
+				estimate = estimateService.calculateForEstimate(estimate);
 				estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), false);
 
 				log.info("見積書の更新が完了。見積書一覧へリダイレクト");
@@ -209,7 +218,8 @@ public class EstimateController {
 			try {
 				Estimate estimate = modelMapper.map(estimateForm, Estimate.class);
 				estimate.setId(0); // 新規作成のためIDをリセット
-
+				// 小計、税、合計を再計算
+				estimate = estimateService.calculateForEstimate(estimate);
 				estimateService.saveEstimateWithItems(estimate, estimateForm.getItems(), true);
 
 				log.info("新規見積書の作成が完了。見積書一覧へリダイレクト");
@@ -336,6 +346,9 @@ public class EstimateController {
 			return f;
 		}).toList();
 		estimateForm.setItems(itemForms);
+		estimateForm.setSubtotal(estimate.getSubtotal());
+		estimateForm.setTax(estimate.getTax());
+		estimateForm.setTotal(estimate.getTotal());
 
 		model.addAttribute("estimateForm", estimateForm);
 		populateChoices(model, estimateForm);

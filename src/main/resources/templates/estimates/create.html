@@ -14,7 +14,8 @@
     <form class="row" th:action="@{/estimates/create}" method="post" th:object="${estimateForm}">
       <!-- 件名 -->
       <div class="col-4">
-        <label for="title" th:text="#{label.title}" class="form-label"></label> <input type="text" th:field="*{title}" class="form-control">
+        <label for="title" th:text="#{label.title}" class="form-label"></label>
+        <input type="text" th:field="*{title}" class="form-control">
         <th:block th:with="fieldName='title'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{title}" class="text-danger"></div>
         </th:block>
@@ -22,7 +23,8 @@
       </div>
       <!-- 顧客名 -->
       <div class="col-4">
-        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label> <input type="text" th:field="*{clientName}" class="form-control">
+        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label>
+        <input type="text" th:field="*{clientName}" class="form-control">
         <th:block th:with="fieldName='clientName'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{clientName}" class="text-danger"></div>
         </th:block>
@@ -76,13 +78,15 @@
                   <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unit}" class="text-danger"></div>
                     </th:block></td>
-                  <td><input type="text" class="form-control" readonly
-                    th:value="${(totals != null) and (totals.rowTotals != null) and (totals.rowTotals.size() > stat.index)
-           ? #numbers.formatDecimal(totals.rowTotals[stat.index], 1, 'COMMA', 2, 'POINT')
-           : ''}">
+                  <td><input type="text" class="form-control js-row-total" readonly
+                      th:value="${(item.unitPrice != null and item.quantity != null)
+               ? #numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT')
+               : ''
+           }">
                   </td>
+                  <!-- 内訳行削除ボタン -->
                   <td>
-                    <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" onclick="'removeItem(this)'"></button>
+                    <button type="button" class="btn btn-danger" th:text="#{button.delete}" style="white-space: nowrap;" th:onclick="'removeItem(this)'"></button>
                   </td>
                 </tr>
               </tbody>
@@ -96,18 +100,19 @@
             </table>
           </div>
         </div>
+        <!-- 合計金額表示 -->
         <div class="col-2">
           <div>
-            <label class="form-label .js-row-total" th:text="#{label.total}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.subtotal, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.total}"></label>
+            <input id="subtotal" type="text" class="form-control" readonly th:value="${#numbers.formatInteger(estimateForm.subtotal, 1, 'COMMA')}">
           </div>
           <div>
-            <label class="form-label .js-row-total" th:text="#{label.tax}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.tax, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.tax}"></label>
+            <input id="tax" type="text" class="form-control" readonly th:value="${#numbers.formatInteger(estimateForm.tax, 1, 'COMMA')}">
           </div>
           <div>
-            <label class="form-label .js-row-total" th:text="#{label.totalWithTax}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimateForm.items != null ? #numbers.formatInteger(estimateForm.total, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.totalWithTax}"></label>
+            <input id="total" type="text" class="form-control" readonly th:value="${#numbers.formatInteger(estimateForm.total, 1, 'COMMA')}">
           </div>
         </div>
       </div>
@@ -117,8 +122,9 @@
         <div class="col-2">
           <button type="button" class="btn btn-secondary" onclick="addItem()" th:text="#{button.addItem}"></button>
         </div>
+        <!-- 合計再計算ボタン -->
         <div class="col-2">
-          <button type="button" class="btn btn-secondary" onclick="calculateRowTotal()" th:text="#{button.}"></button>
+          <button type="button" class="btn btn-secondary" onclick="calculateTotal()" th:text="#{button.calculate}"></button>
         </div>
       </div>
 
@@ -145,7 +151,7 @@
         <td><input type="text" name="items[__index__].unit" class="form-control"></td>
         <td><input type="text" class="form-control js-row-total" value="0.00" readonly></td>
         <td>
-          <button type="button" class="btn btn-danger btn-sm" th:text="#{button.delete}" style="white-space: nowrap;" onclick="removeItem(this)"></button>
+          <button type="button" class="btn btn-danger" th:text="#{button.delete}" style="white-space: nowrap;" onclick="removeItem(this)"></button>
         </td>
       </tr>
     </template>
@@ -166,7 +172,7 @@
 				const newRow = tempDiv.querySelector("tr");
 
 				tbody.appendChild(newRow);
-				calculateRowTotal(); //行追加後に再計算
+				calculateTotal(); //行追加後に再計算
 			}
 			// 内訳行の削除
 			function removeItem(button) {
@@ -174,11 +180,11 @@
 				if (row) {
 					row.remove();
 				}
-				calculateRowTotal(); //行削除後に再計算
+				calculateTotal(); //行削除後に再計算
 			}
 			// 合計金額の計算
 
-			function calculateRowTotal() {
+			function calculateTotal() {
 				const items = document.querySelectorAll("#items tbody tr");
 				let subtotal = 0;
 
@@ -192,6 +198,28 @@
 	                    rowTotalInput.value = rowTotal.toFixed(2);
 	                }
 				});
+				// 小計、税額、合計の計算
+				items.forEach(item => {
+                    const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
+                    const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
+                    subtotal += unitPrice * quantity;
+                });
+				const tax = Math.floor(subtotal * 0.1); // 税率10%
+				const total = subtotal + tax;
+				
+			    const subtotalInput = document.getElementById("subtotal");
+			    const taxInput      = document.getElementById("tax");
+			    const totalInput    = document.getElementById("total");
+
+			    if (subtotalInput) {
+			      subtotalInput.value = subtotal.toLocaleString();
+			    }
+			    if (taxInput) {
+			      taxInput.value = tax.toLocaleString();
+			    }
+			    if (totalInput) {
+			      totalInput.value = Math.floor(total).toLocaleString();
+			    }
 			}
 			document.addEventListener("DOMContentLoaded", function () {
 				const itemsDiv = document.getElementById("items");

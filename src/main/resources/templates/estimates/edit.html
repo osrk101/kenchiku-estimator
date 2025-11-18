@@ -14,7 +14,8 @@
     <form class="row" id="editForm" th:action="@{/estimates/edit/{id}(id=${estimateForm.id})}" method="post" th:object="${estimateForm}">
       <!-- 件名 -->
       <div class="col-4">
-        <label for="title" th:text="#{label.title}" class="form-label"></label> <input type="text" th:field="*{title}" class="form-control">
+        <label for="title" th:text="#{label.title}" class="form-label"></label>
+        <input type="text" th:field="*{title}" class="form-control">
         <th:block th:with="fieldName='title'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{title}" class="text-danger"></div>
         </th:block>
@@ -22,7 +23,8 @@
       </div>
       <!-- 顧客名 -->
       <div class="col-4">
-        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label> <input type="text" th:field="*{clientName}" class="form-control">
+        <label for="clientName" th:text="#{label.clientName}" class="form-label"></label>
+        <input type="text" th:field="*{clientName}" class="form-control">
         <th:block th:with="fieldName='clientName'">
           <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{clientName}" class="text-danger"></div>
         </th:block>
@@ -62,7 +64,7 @@
                 <!-- 内訳行の表示 -->
                 <tr th:each="item, stat : *{items}">
                   <td><input type="hidden" th:field="*{items[__${stat.index}__].id}" /> <input type="hidden" th:field="*{items[__${stat.index}__].estimateId}" /> <input type="text"
-                    th:field="*{items[__${stat.index}__].itemName}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
+                      th:field="*{items[__${stat.index}__].itemName}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].itemName}" class="text-danger"></div>
                     </th:block></td>
                   <td><input type="number" min="0" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control"> <th:block
@@ -76,35 +78,39 @@
                   <td><input type="text" th:field="*{items[__${stat.index}__].unit}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].unit'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unit}" class="text-danger"></div>
                     </th:block></td>
-                  <td><input type="text" th:value="${item.unitPrice != null and item.quantity != null} ? ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT')} : ''"
-                    class="form-control js-row-total" readonly></td>
+                  <td><input type="text"
+                      th:value="${(item.unitPrice != null and item.quantity != null)
+                 ? #numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'COMMA', 2, 'POINT')
+                 : '' }"
+                      class="form-control js-row-total" readonly></td>
+                  <!-- 内訳行削除ボタン -->
                   <td>
-                  <td>
-                    <button type="button" class="btn btn-danger" th:text="#{button.delete}" style="white-space: nowrap;" th:onclick="'removeItem(this)'">削除</button>
+                    <button type="button" class="btn btn-danger" th:text="#{button.delete}" style="white-space: nowrap;" th:onclick="'removeItem(this)'"></button>
                   </td>
                 </tr>
               </tbody>
               <!-- 内訳全体のエラー表示 -->
               <tr th:if="${#fields.hasErrors('*{items}')}">
-                <td colspan="5">
+                <td colspan="6">
                   <div class="alert alert-danger" th:errors="*{items}"></div>
                 </td>
               </tr>
             </table>
           </div>
         </div>
+        <!-- 合計金額表示 -->
         <div class="col-2">
           <div>
-            <label class="form-label" th:text="#{label.total}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.subtotal, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.total}"></label>
+            <input id="subtotal" type="text" class="form-control" readonly th:value="${estimate.items != null ? #numbers.formatInteger(estimate.subtotal, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.tax}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.tax, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.tax}"></label>
+            <input id="tax" type="text" class="form-control" readonly th:value="${estimate.items != null ? #numbers.formatInteger(estimate.tax, 1, 'COMMA') : ''}">
           </div>
           <div>
-            <label class="form-label" th:text="#{label.totalWithTax}"></label> <input type="text" class="form-control" readonly
-              th:value="${estimate.items != null ? #numbers.formatInteger(estimate.total, 1, 'COMMA') : ''}">
+            <label class="form-label" th:text="#{label.totalWithTax}"></label>
+            <input id="total" type="text" class="form-control" readonly th:value="${estimate.items != null ? #numbers.formatInteger(estimate.total, 1, 'COMMA') : ''}">
           </div>
         </div>
       </div>
@@ -113,6 +119,10 @@
       <div class="row">
         <div class="col-2">
           <button type="button" class="btn btn-secondary" onclick="addItem()" th:text="#{button.addItem}"></button>
+        </div>
+        <!-- 合計再計算ボタン -->
+        <div class="col-2">
+          <button type="button" class="btn btn-secondary" onclick="calculateTotal()" th:text="#{button.calculate}"></button>
         </div>
       </div>
       <!-- グローバルエラー -->
@@ -124,7 +134,7 @@
         <div class="col-4 text-center">
           <button type="submit" name="action" value="update" th:text="#{button.save}" class="btn btn-primary"></button>
           <button type="submit" name="action" value="saveAsNew" th:text="#{button.saveAsNew}" class="btn btn-success"></button>
-          <a th:href="@{/estimates}" th:text="#{button.cancel}" class="btn btn-secondary"></a>
+          <a th:href="@{/estimates}" th:text="#{button.back}" class="btn btn-secondary"></a>
         </div>
       </div>
     </form>
@@ -160,7 +170,7 @@
 				const newRow = tempDiv.querySelector("tr");
 
 				tbody.appendChild(newRow);
-				calculateRowTotal(); //行追加後に再計算
+				calculateTotal(); //行追加後に再計算
 			}
 			// 内訳行の削除
 			function removeItem(button) {
@@ -170,26 +180,49 @@
 				}
 				calculateTotal(); //行削除後に再計算
 			}
-			// 行ごとの小計の計算
-			function calculateRowTotal() {
+			// 小計の計算
+			function calculateTotal() {
 				const items = document.querySelectorAll("#items tbody tr");
 				let subtotal = 0;
 
 				items.forEach(item => {
 					const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
 					const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
-				   const rowTotal = unitPrice * quantity;
-				// 行ごとの合計を表示
+					const rowTotal = unitPrice * quantity;
+					// 行ごとの合計を表示
 					const rowTotalInput = item.querySelector(".js-row-total");
-				if (rowTotalInput) {
-                    rowTotalInput.value = rowTotal.toFixed(2);
-                }
+					if (rowTotalInput) {
+	                    rowTotalInput.value = rowTotal.toFixed(2);
+	                }
 				});
+				// 小計、税額、合計の計算
+				items.forEach(item => {
+                    const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
+                    const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
+                    subtotal += unitPrice * quantity;
+                });
+				const tax = Math.floor(subtotal * 0.1); // 税率10%
+				const total = subtotal + tax;
+				
+			    const subtotalInput = document.getElementById("subtotal");
+			    const taxInput      = document.getElementById("tax");
+			    const totalInput    = document.getElementById("total");
+
+			    if (subtotalInput) {
+			      subtotalInput.value = subtotal.toLocaleString();
+			    }
+			    if (taxInput) {
+			      taxInput.value = tax.toLocaleString();
+			    }
+			    if (totalInput) {
+			      totalInput.value = total.toLocaleString();
+			    }
+			}
 
 			document.addEventListener("DOMContentLoaded", function () {
 				const itemsDiv = document.getElementById("items");
 				itemsDiv.addEventListener("input", calculateTotal);
-				calculateRowTotal(); // 初期計算
+				calculateTotal(); // 初期計算
 			});
 
 			// フォーム送信前に内訳のインデックスを再設定
