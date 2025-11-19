@@ -39,6 +39,7 @@
           <th th:text="#{label.clientName}"></th>
           <th th:text="#{label.createdBy}"></th>
           <th th:text="#{label.updateDate}"></th>
+          <th th:text="#{label.createdDate}"></th>
           <th th:text="#{label.controll}"></th>
         </tr>
       </thead>
@@ -48,6 +49,7 @@
           <td th:text="${estimate.title}"></td>
           <td th:text="${estimate.clientName}"></td>
           <td th:text="${estimate.fullName}"></td>
+          <td th:text="${estimate.updateAt}"></td>
           <td th:text="${estimate.createdAt}"></td>
           <td>
             <a th:text="#{button.detialView}" th:href="@{|/estimates/detail/${estimate.id}|}" class="btn btn-outline-primary btn-sm"></a>

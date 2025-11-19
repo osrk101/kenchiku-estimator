@@ -13,21 +13,25 @@
         <h5 class="card-title" th:text="${estimate.title}"></h5>
 
         <div class="row mb-2">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label" th:text="#{label.estimateNumber}"></label>
             <p th:text="${estimate.estimateNumber}"></p>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label" th:text="#{label.clientName}"></label>
             <p th:text="${estimate.clientName}"></p>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label" th:text="#{label.createdBy}"></label>
             <p class="form-control-plaintext" th:text="${estimate.fullName}"></p>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label" th:text="#{label.createdDate}"></label>
             <p class="form-control-plaintext" th:text="${#temporals.format(estimate.createdAt, 'yyyy/MM/dd')}"></p>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" th:text="#{label.updateDate}"></label>
+            <p class="form-control-plaintext" th:text="${#temporals.format(estimate.updateAt, 'yyyy/MM/dd')}"></p>
           </div>
         </div>
         <div class="row mb-2">

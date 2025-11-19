@@ -67,7 +67,7 @@
                   <td><input type="text" th:field="*{items[__${stat.index}__].itemName}" class="form-control"> <th:block th:with="fieldName=${'items[' + stat.index + '].itemName'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].itemName}" class="text-danger"></div>
                     </th:block></td>
-                  <td><input type="number" min="0" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control"> <th:block
+                  <td><input type="number" min="0" step="0.01" th:field="*{items[__${stat.index}__].unitPrice}" class="form-control"> <th:block
                       th:with="fieldName=${'items[' + stat.index + '].unitPrice'}">
                       <div th:if="${#fields.hasErrors(fieldName)}" th:errors="*{items[__${stat.index}__].unitPrice}" class="text-danger"></div>
                     </th:block></td>
@@ -103,7 +103,7 @@
         <!-- 合計金額表示 -->
         <div class="col-2">
           <div>
-            <label class="form-label" th:text="#{label.total}"></label>
+            <label class="form-label" th:text="#{label.subtotal}"></label>
             <input id="subtotal" type="text" class="form-control" readonly th:value="${#numbers.formatInteger(estimateForm.subtotal, 1, 'COMMA')}">
           </div>
           <div>
@@ -122,9 +122,9 @@
         <div class="col-2">
           <button type="button" class="btn btn-secondary" onclick="addItem()" th:text="#{button.addItem}"></button>
         </div>
-        <!-- 合計再計算ボタン -->
+        <!-- 再計算ボタン -->
         <div class="col-2">
-          <button type="button" class="btn btn-secondary" onclick="calculateTotal()" th:text="#{button.calculate}"></button>
+          <button type="button" class="btn btn-secondary" onclick="calculateTotal()" th:text="#{button.recalculate}"></button>
         </div>
       </div>
 
@@ -174,6 +174,7 @@
 				tbody.appendChild(newRow);
 				calculateTotal(); //行追加後に再計算
 			}
+			
 			// 内訳行の削除
 			function removeItem(button) {
 				const row = button.closest("tr");
@@ -182,8 +183,8 @@
 				}
 				calculateTotal(); //行削除後に再計算
 			}
-			// 合計金額の計算
-
+			
+			// 金額計算
 			function calculateTotal() {
 				const items = document.querySelectorAll("#items tbody tr");
 				let subtotal = 0;
@@ -192,33 +193,29 @@
 					const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
 					const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
 					const rowTotal = unitPrice * quantity;
-					// 行ごとの合計を表示
+					// 行小計を表示
 					const rowTotalInput = item.querySelector(".js-row-total");
 					if (rowTotalInput) {
 	                    rowTotalInput.value = rowTotal.toFixed(2);
-	                }
-				});
-				// 小計、税額、合計の計算
-				items.forEach(item => {
-                    const unitPrice = parseFloat(item.querySelector("input[name$='.unitPrice']").value) || 0;
-                    const quantity = parseFloat(item.querySelector("input[name$='.quantity']").value) || 0;
-                    subtotal += unitPrice * quantity;
+	                }	
+					subtotal += rowTotal;
                 });
-				const tax = Math.floor(subtotal * 0.1); // 税率10%
-				const total = subtotal + tax;
+				const subtotalInt = Math.floor(subtotal); // 小計を整数に切り下げ
+				const tax = Math.floor(subtotalInt * 0.1); // 税率10%
+				const total = subtotalInt + tax; // 合計金額
 				
 			    const subtotalInput = document.getElementById("subtotal");
 			    const taxInput      = document.getElementById("tax");
 			    const totalInput    = document.getElementById("total");
 
 			    if (subtotalInput) {
-			      subtotalInput.value = subtotal.toLocaleString();
+			      subtotalInput.value = subtotalInt.toLocaleString();
 			    }
 			    if (taxInput) {
 			      taxInput.value = tax.toLocaleString();
 			    }
 			    if (totalInput) {
-			      totalInput.value = Math.floor(total).toLocaleString();
+			      totalInput.value = total.toLocaleString();
 			    }
 			}
 			document.addEventListener("DOMContentLoaded", function () {

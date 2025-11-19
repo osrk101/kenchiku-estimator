@@ -22,13 +22,13 @@ public class EstimateItemForm {
     private String itemName;
 
     @NotNull(message = "単価は必須です")
-    @DecimalMin(value = "0.0", inclusive = true, message = "単価は0以上の値を入力してください")
-    @Digits(integer = 8, fraction = 2, message = "単価は整数8桁、小数2桁以内で入力してください")
+    @DecimalMin(value = "0.00", inclusive = true, message = "単価は0以上の値を入力してください")
+    @Digits(integer = 4, fraction = 2, message = "単価は整数4桁、小数2桁以内で入力してください")
     public BigDecimal unitPrice;
 
     @NotNull(message = "数量は必須です")
-    @DecimalMin(value = "0.0", inclusive = true, message = "数量は0以上の値を入力してください")
-    @Digits(integer = 8, fraction = 2, message = "数量は整数8桁、小数2桁以内で入力してください")
+    @DecimalMin(value = "0.00", inclusive = true, message = "数量は0以上の値を入力してください")
+    @Digits(integer = 7, fraction = 2, message = "数量は整数7桁、小数2桁以内で入力してください")
     public BigDecimal quantity;
 
     @NotBlank(message = "単位は必須です")

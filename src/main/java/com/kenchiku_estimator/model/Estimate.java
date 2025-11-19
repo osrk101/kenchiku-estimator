@@ -20,6 +20,8 @@ public class Estimate {
   private int createdBy;
 
   private LocalDate createdAt;
+  
+  private LocalDate updateAt;
 
   private String fullName;
 

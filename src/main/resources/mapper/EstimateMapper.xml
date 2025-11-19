@@ -19,12 +19,13 @@
 		clientName,
 		e.created_by,
 		e.created_at,
+		e.update_at,
 		a.full_name AS fullName
 		FROM
 		estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
 		ORDER BY
-		e.created_at DESC
+		e.update_at DESC
 	</select>
 	<!-- 担当する見積書の一覧を取得 -->
 	<select id="findByCreateBy" parameterType="int"
@@ -36,12 +37,13 @@
 		clientName,
 		e.created_by,
 		e.created_at,
+		e.update_at,
 		a.full_name AS fullName FROM
 		estimates e
 		LEFT JOIN accounts a ON e.created_by = a.id
 		WHERE
 		e.created_by = #{createdBy}
-		ORDER BY e.created_at DESC
+		ORDER BY e.update_at DESC
 	</select>
 
 	<!-- 検索ワードに該当する見積書を取得(管理者) -->
@@ -54,6 +56,7 @@
 		clientName,
 		e.created_by,
 		e.created_at,
+		e.update_at,
 		a.full_name AS fullName
 		FROM
 		estimates e
@@ -66,7 +69,7 @@
 		OR e.estimate_number LIKE CONCAT('%',
 		#{searchWords}, '%')
 		OR e.id = #{searchWords}
-		ORDER BY e.created_at
+		ORDER BY e.update_at
 		DESC
 	</select>
 
@@ -79,13 +82,14 @@
 		e.client_name AS clientName, 
 		e.created_by, 
 		e.created_at, 
+		e.update_at,
 		a.full_name AS fullName FROM
 		estimates e LEFT JOIN accounts a ON e.created_by = a.id 
 		WHERE (e.title
 		LIKE CONCAT('%', #{searchWords}, '%') OR e.client_name LIKE
 		CONCAT('%', #{searchWords}, '%') OR e.estimate_number LIKE CONCAT('%',
 		#{searchWords}, '%') OR e.id = #{searchWords}) AND e.created_by =
-		#{createdBy} ORDER BY e.created_at DESC
+		#{createdBy} ORDER BY e.update_at DESC
 	</select>
 	<!-- IDで見積書を取得 -->
 	<select id="findById" parameterType="int"
@@ -97,6 +101,7 @@
 		clientName,
 		e.created_by,
 		e.created_at,
+		e.update_at,
 		a.full_name AS fullName
 		FROM
 		estimates e
@@ -120,7 +125,7 @@
 		UPDATE estimates
 		SET title = #{title}, client_name =
 		#{clientName}, created_by =
-		#{createdBy}, created_at =
+		#{createdBy}, update_at =
 		CURRENT_DATE
 		WHERE id = #{id}
 	</update>

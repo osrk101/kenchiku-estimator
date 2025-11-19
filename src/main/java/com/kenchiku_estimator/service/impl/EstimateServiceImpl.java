@@ -186,7 +186,7 @@ public class EstimateServiceImpl implements EstimateService {
 	public Estimate calculateForEstimate(Estimate estimate) {
 
 		log.info("Service 合計金額計算処理を実行");
-		BigDecimal amount = BigDecimal.ZERO;
+		BigDecimal subtotal = BigDecimal.ZERO;
 		BigDecimal taxRate = new BigDecimal("1.10"); // 税率10%
 		BigDecimal tax = BigDecimal.ZERO;
 		BigDecimal totalAmountWithTax = BigDecimal.ZERO;
@@ -199,21 +199,19 @@ public class EstimateServiceImpl implements EstimateService {
 			item.setRowSubtotal(lineTotal);
 			
 			// 小計に行小計を加算
-			amount = amount.add(lineTotal);
+			subtotal = subtotal.add(lineTotal);
 		}
+		BigDecimal subtotalRounded = subtotal.setScale(0, RoundingMode.DOWN);
 		
-		tax = amount.multiply(new BigDecimal("0.10"));
-		totalAmountWithTax = amount.multiply(taxRate);
+		tax = subtotalRounded.multiply(new BigDecimal("0.10"));
+		totalAmountWithTax = subtotalRounded.multiply(taxRate);
 		
-		// 小数点以下を切り捨て
-		BigDecimal totalAmountWithTaxRunded = totalAmountWithTax.setScale(0, RoundingMode.DOWN);
-
-		log.info("Service 合計金額計算結果: 税抜金額 = {}", amount);
+		log.info("Service 合計金額計算結果: 税抜金額 = {}", subtotalRounded);
 		log.info("Service 合計金額計算結果: 税率 = {}", taxRate);
-		log.info("Service 合計金額計算結果: 税込金額 = {}", totalAmountWithTaxRunded);
-		estimate.setSubtotal(amount);
+		log.info("Service 合計金額計算結果: 税込金額 = {}", totalAmountWithTax);
+		estimate.setSubtotal(subtotalRounded);
 		estimate.setTax(tax);
-		estimate.setTotal(totalAmountWithTaxRunded);
+		estimate.setTotal(totalAmountWithTax);
 		
 		return estimate;
 	}
